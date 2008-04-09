@@ -3,4 +3,4 @@
 ;;MAIN
 
 ;;History
-;;080409 Created by VD
+;;080409 Created by VD the man
