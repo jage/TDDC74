@@ -13,4 +13,4 @@
      (set-y! (lambda (arg) (set! y arg))))
   (super-new)))
 
-(define tja (make-object block% 2 2))
+(define tja (make-object block% 10 10))

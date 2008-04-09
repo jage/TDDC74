@@ -1,0 +1,134 @@
+
+- - TETRIS - -
+
+Skapad: 080404
+Ändrad:
+
+- KRAV
+	- Spelbart enligt Tetris-standard (TETR 745 §4)
+	- Poängsystem
+	- Färg-grafik
+	- Block enligt TETR 452 §2
+
+- EXTRA FUNKTIONALITET
+	- Nätverksfunkonalitet
+		- Straffsystem
+
+	- Svårighetsgrader (hastigheter)
+	- WWW-highscore
+	- Ljud
+
+- HUVUDOBJEKT
+
+	- Main
+		- Inkludering av filer och initiering av objekt. 
+		- Start och avslut av programmet.
+
+	- Supervisor
+		- "Spindeln i nätet"
+		- Har koll på alla objekt och ger aviseringar till dem
+
+	- Input-handler
+		- Sköter inmatning från t.ex. tangentbord
+		- Skickar dessa signaler till supervisor för vidare behandling
+
+	- Board
+		- Spelplanen (matris)
+		- Innehåller placerade objekt, blocks.
+	- Game Blocks
+		- Standard Tetris block
+
+	- Render
+		- Ritar upp "Game-board" på skärmen för användaren
+
+	- GameEngine
+		- "Spelregler"
+		- Kontrollerar så att handlingar får utföras, samt utför dessa.
+
+- PROGRAMBESKRIVNING
+När spelet startas initieras 'Supervisor', 'Board', 'Input-handler', 'Blocks', 'Render' och 'GameEngine'. Dessa kopplas sedan samman där 'Supervisor' övertar kontrollen över dessa objekt för att sedan startar spel-loopen.
+
+I spel-loopen väntar 'Supervisorn' på klartecken från specifika objekt för att kunna utföra nästa steg.
+
+Exempel på iterationer)
+
+hämta block >> placera på spelplan >> rendera >> interaktion från användare >> korrekt move? >> utför >> uppdatera spelplan >> rendera >> interaktion från användare .... >> rendera >> hämta block ......
+
+
+BESKRIVNING AV OBJEKT
+
+- Main
+	Egenskaper
+	-
+	
+	Metoder
+	- StartGame()
+	- EndGame()
+
+- Supervisor
+	Egenskaper
+	- InputHandler
+	- GameBoard
+	- GameBlocks
+	- RenderEngine
+	- GameEngine
+	
+	Metoder
+	- (NewSupervisor(gameboard, gameblocks, inputhandler, renderegine)) (Konstruktor)
+	- NewRun()
+	- Reset()
+
+- InputHandler
+	Egenskaper
+	- ReadingInput
+	- AllowedKeys
+	
+	Metoder
+	- (NewInputHandler(allowedkeys)) (Konstruktor)
+	- (GetLastPushedButton)
+
+- GameBoard
+	Egenskaper
+	- Size
+	- Filled
+
+	Metoder
+	- (NewGameBoard(hsize,wsize, gameengine) (Konstruktor)
+	- PlaceNewBlock(block)
+	- MoveBlock(block, coords)
+	- RotateBlock(block)
+	- (GetActiveBlock())
+	- (GetBoard())
+	- DeleteRows(y)
+
+- GameBlock
+	Egenskaper
+	- Color
+	- Shape
+	- Active?
+
+	Metoder
+	- (NewGameBlock(shape, color)) (Konstruktor)
+	- UpdateCoords(x, y)
+	
+- RenderEngine
+	Egenskaper
+	- Speed
+	
+	Metoder
+	- ((NewRenderEngine(gameboard, speed)) (Konstruktor)
+	- Render()
+	- Clear()
+
+- GameEngine
+	Egenskaper
+	- Delay
+	- RandomSeed
+	
+	Metoder
+	- (NewGameEngine())
+	- CanMove?(gameboard, block, newcoords)
+	- (PerformNewMove?(gameboard))
+	- SetDelay(sec)
+	- (GetDelay())
+	- GameOver?
