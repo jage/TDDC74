@@ -31,4 +31,4 @@
     ))
   
   
-(define tja (make-object block% (cons 10 10)))
+;;(define tja (make-object block% (cons 10 10)))

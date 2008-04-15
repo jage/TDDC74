@@ -28,8 +28,9 @@
     (define (create-piece list)
       (if (not (null? list))
           (begin
-            (send this add-block! (car list))
-            (create-piece (cdr list)))))
+            (let ((pair (car list)))
+              (send this add-block! (cons (car pair) (cadr pair)))
+              (create-piece (cdr list))))))
     
     ;;calls the constructor
     (constructor)
@@ -44,7 +45,7 @@
     
     ;;add block to piece
     (define/public (add-block! rel-coord)
-      (set! _blocks (append (list (make-object block% (car rel-coord) (cdr rel-coord))) _blocks)))
+      (set! _blocks (append _blocks (list (make-object block% rel-coord)))))
     
     ;;get blocks
     (define/public (get-blocks)
@@ -71,4 +72,3 @@
    
 
 ;;(define test-piece (make-object piece% 'test '((1 0) (-1 0)) *red-brush*))
-
