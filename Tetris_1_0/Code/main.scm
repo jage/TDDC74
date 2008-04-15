@@ -23,7 +23,8 @@
 ;(define T '((0 0) (0 1) (-1 0) (0 -1)))
 (define S '((0 0) (0 1) (1 1) (-1 0)))
 (define L '((0 0) (0 -1) (0 1) (1 1)))
-(define activepiece L)
+(define I '((0 0) (-1 0) (1 0) (2 0)))
+(define activepiece I)
 
 (define (move-piece piece delta-x delta-y)
   (if (and (not (null? piece)) (move-possible? piece delta-x delta-y))
@@ -57,7 +58,7 @@
   (set-cdr! block (list (+ (cadr block) (cadr coordinates)))))
 
 ; default
-(define rotate-clockvise #t)
+(define rotate-clockwise #t)
 
 (define (rotate-piece! piece)
   (define (worker piece fix-block)
@@ -65,27 +66,8 @@
         (begin
           (let* ((block (car piece))
                  (placement (delta-coordinate fix-block block)))
-            ; Ordning skall ändras, orkar bara inte nu
-            (if (not rotate-clockvise)
-                ;; Moturs
-                (cond
-                  ((equal? '(0 1) placement)
-                   (move-block! block '(1 -1))) ; -> (1 0)
-                  ((equal? '(0 -1) placement)
-                   (move-block! block '(-1 1))) ; -> (-1 0)
-                  ((equal? '(1 0) placement)
-                   (move-block! block '(-1 -1))) ; -> (0 -1)
-                  ((equal? '(1 1) placement)
-                   (move-block! block '(0 -2))) ; -> (1 -1)
-                  ((equal? '(1 -1) placement)
-                   (move-block! block '(-2 0))) ; -> (-1 -1) 
-                  ((equal? '(-1 0) placement)
-                   (move-block! block '(1 1))) ; -> (0 1)
-                  ((equal? '(-1 1) placement)
-                   (move-block! block '(2 0)))  ; -> (1 1)
-                  ((equal? '(-1 -1) placement)
-                   (move-block! block '(0 2)))) ;> -> (-1 1)
-                ; Medurs
+            (if rotate-clockwise
+                ; clockwise
                 (cond
                   ((equal? '(0 1) placement)
                    (move-block! block '(-1 -1)))
@@ -102,7 +84,31 @@
                   ((equal? '(-1 1) placement)
                    (move-block! block '(0 -2)))  
                   ((equal? '(-1 -1) placement)
-                   (move-block! block '(2 0)))))
+                   (move-block! block '(2 0)))
+                  ;; Hack to handle the I-piece
+                  ((equal? '(2 0) placement)
+                   (move-block! block '(-2 2)))) ; (0 2)
+                ; !clockvise
+                (cond
+                  ((equal? '(0 1) placement)
+                   (move-block! block '(1 -1))) ; -> (1 0)
+                  ((equal? '(0 -1) placement)
+                   (move-block! block '(-1 1))) ; -> (-1 0)
+                  ((equal? '(1 0) placement)
+                   (move-block! block '(-1 -1))) ; -> (0 -1)
+                  ((equal? '(1 1) placement)
+                   (move-block! block '(0 -2))) ; -> (1 -1)
+                  ((equal? '(1 -1) placement)
+                   (move-block! block '(-2 0))) ; -> (-1 -1) 
+                  ((equal? '(-1 0) placement)
+                   (move-block! block '(1 1))) ; -> (0 1)
+                  ((equal? '(-1 1) placement)
+                   (move-block! block '(2 0)))  ; -> (1 1)
+                  ((equal? '(-1 -1) placement)
+                   (move-block! block '(0 2)))  ; -> (-1 1))
+                  ; Hack to handle the I-piece
+                  ((equal? '(0 2) placement)
+                   (move-block! block '(2 -2))))) ; (2 0) 
             (display placement)
             (worker (cdr piece) fix-block)))))
   (worker piece (car piece)))
@@ -125,7 +131,7 @@
   (cond
     ((eq? key #\space)
      (display "space")
-     (set! rotate-clockvise (not rotate-clockvise)))
+     (set! rotate-clockwise (not rotate-clockwise)))
     ((eq? key 'up) 
      (display "up\n")
      (rotate-piece! activepiece))
