@@ -2,9 +2,6 @@
 
 ;;Piece object
 
-(load "block.scm")
-(load "../graphics.scm")
-
 (define piece%
   (class object%
     (super-new)
@@ -54,7 +51,7 @@
     ;;get piece brush
     (define/public (get-brush)
       _brush)
-
+    
     ;;get piece type
     (define/public (get-type)
       _type)
@@ -63,11 +60,31 @@
     (define/public (rotated?)
       _rotated)
     
+    
     ;;rotate piece
     (define/public (rotate)
       (if _rotated
           (set! _rotated #f)
-          (set! _rotated #t)))    
+          (set! _rotated #t))
+      (for-each 
+       (lambda (block)
+         (send block set-coord! (assoc-list)
+               (let ((placement (send block get-coord)))
+                 (send block set-coord! 
+                       ; counter clockwise rotation
+                       (cond
+                         ((equal? placement (cons 0 1))   (cons 1 0))
+                         ((equal? placement (cons 0 -1))  (cons -1 0))
+                         ((equal? placement (cons 1 0 ))  (cons 0 -1))
+                         ((equal? placement (cons 1 1))   (cons 1 -1))
+                         ((equal? placement (cons 1 -1))  (cons -1 -1))
+                         ((equal? placement (cons -1 0))  (cons 0 1))
+                         ((equal? placement (cons -1 1))  (cons 1 1))
+                         ((equal? placement (cons -1 -1)) (cons -1 1))
+                         ((equal? placement (cons 0 2))   (cons 2 0))
+                         (else placement)))))
+         _pieces)))
+    
     ))
    
 
