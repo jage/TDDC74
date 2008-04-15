@@ -6,21 +6,29 @@
   (class object%
     (super-new)
     
-    (init x y) ;;constructor
+    (init coord) ;;constructor
     
     ;;member variables
-    (define _x x)
-    (define _y x)
+    (define _coord coord)
     
     ;;fields
     
-    ;;x coord
+    ;;get x coord
     (define/public (get-x)
-      _x)
+      (car _coord))
     
-    ;;y coord
+    ;;get y coord
     (define/public (get-y)
-      _y)))
+      (cdr _coord))
+    
+    ;;set block rel. coord
+    (define/public (set-coord! coord)
+      (set! _coord coord))
+    
+    ;;get block rel. coord to piece
+    (define/public (get-coord)
+      _coord)
+    ))
   
   
-  ;;(define tja (make-object block% 10 10))
+(define tja (make-object block% (cons 10 10)))
