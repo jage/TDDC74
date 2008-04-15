@@ -179,8 +179,8 @@
     (parent *frame*)
     (paint-callback draw-canvas)
     (key-callback key-fn)
-    (min-height 400)
-    (min-width 200)
+    (min-height 400) ;;global
+    (min-width 200) ;global
     (stretchable-width #f) 
     (stretchable-height #f)))
 
