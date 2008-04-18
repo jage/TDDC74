@@ -9,7 +9,6 @@
 (load "objects/piece.scm")
 (load "objects/board.scm")
 
-
 ;; Dummy
 (define (update) #t)
 
@@ -36,11 +35,11 @@
 
 (define T '((0 1) (-1 0) (0 -1)))
 (define S '((0 1) (1 1) (-1 0)))
-(define L '((1 0)))
+(define L '((-1 0) (1 0)))
 (define I '((-1 0) (1 0) (2 0)))
 
 (define *board* (make-object board% (cons 10 20) 20))
-(send *board* add-piece-on-board (make-object piece% 'L L *yellow-brush*))
+(send *board* add-piece-on-board (make-object piece% 'L L *green-brush*))
 
 (define (draw-pieces list-of-pieces)
   (for-each
@@ -51,14 +50,14 @@
 (define (draw-piece piece)
   (for-each
    (lambda (block)
-     (draw-block block))
+     (draw-block block (send piece get-brush)))
    (send piece get-blocks-coords)))
 
-(define (draw-block block)
+(define (draw-block block-coord brush)
   (draw-rectangle 
-   (* (car block) (send *board* get-pixels-per-unit)) 
-   (* (cdr block) (send *board* get-pixels-per-unit)) 
-   (send *board* get-pixels-per-unit) (send *board* get-pixels-per-unit) *black-pen* *blue-brush*))
+   (* (car block-coord) (send *board* get-pixels-per-unit)) 
+   (* (- (send *board* get-height) (cdr block-coord) 1) (send *board* get-pixels-per-unit))
+   (send *board* get-pixels-per-unit) (send *board* get-pixels-per-unit) *black-pen* brush))
 
 (define (handle-key-event key)
   (let ((active-piece (send *board* get-active-piece)))
