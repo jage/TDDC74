@@ -2,10 +2,6 @@
 
 ;;Board object
 
-;(load "piece.scm")
-;(load "block.scm")
-;(load "../graphics.scm")
-
 (define board%
   (class object%
     (super-new)

@@ -1,3 +1,11 @@
+;; Dummy
+(define (update) #t)
+
+(define (draw)
+  (clear)
+  (draw-pieces (send *board* get-pieces))
+  (show))
+
 (define (draw-pieces list-of-pieces)
   (for-each
    (lambda (piece)
