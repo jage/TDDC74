@@ -59,11 +59,18 @@
     (define/public (units->pixels units)
       (* (get-pixels-per-unit) units))
     
-    ;;add block on board
-    (define/public (add-piece-on-board piece)
+    ;;add block on board (default properties)
+    (define/public (add-piece-on-board-default piece)
       (send piece set-coord! (cons (/ (get-width) 2) (- (get-height) 1)))
       (set! _pieces (append (list piece) _pieces))
       (set-active-piece! piece))
+    
+    ;;add block on board (custom properties)
+    (define/public (add-piece-on-board-custom piece coord active)
+      (send piece set-coord! coord)
+      (set! _pieces (append (list piece) _pieces))
+      (if active
+          (set-active-piece! piece)))
     
     ;;moves a piece on the board
     (define/public (move-piece piece coord)

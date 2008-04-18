@@ -39,7 +39,9 @@
 (define I '((-1 0) (1 0) (2 0)))
 
 (define *board* (make-object board% (cons 10 20) 20))
-(send *board* add-piece-on-board (make-object piece% 'L L *green-brush*))
+(send *board* add-piece-on-board-custom (make-object piece% 'S S *yellow-brush*) (cons 3 8) #f)
+
+(send *board* add-piece-on-board-default (make-object piece% 'L L *green-brush*))
 
 (define (draw-pieces list-of-pieces)
   (for-each
