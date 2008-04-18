@@ -2,10 +2,6 @@
 
 ;;Board object
 
-(load "piece.scm")
-(load "block.scm")
-;;(load "../graphics.scm")
-
 (define board%
   (class object%
     (super-new)
@@ -51,7 +47,7 @@
     (define/public (get-height)
       (cdr _size))
     
-    ;;get units per pixel
+    ;;get pixels per unit
     (define/public (get-pixels-per-unit)
       _pixels-per-unit)
     

@@ -56,6 +56,19 @@
     (define/public (get-blocks)
       _blocks)
     
+    ;;get real block coord
+    (define/public (get-block-coord block)
+      (cons (+ (get-x-coord) (send block get-x)) (+ (get-y-coord) (send block get-y))))
+    
+    ;;get blocks absolute coordinates
+    (define/public (get-blocks-coords)
+      (let ((coords-list '()))
+        (for-each
+         (lambda (block)
+           (set! coords-list (append coords-list (list (get-block-coord block)))))
+         _blocks)
+        coords-list))
+    
     ;;get piece brush
     (define/public (get-brush)
       _brush)
@@ -92,7 +105,6 @@
                          ((equal? placement (cons 0 2))   (cons 2 0))
                          (else placement)))))
          _pieces)))
-    
     ))
    
 
