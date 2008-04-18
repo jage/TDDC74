@@ -14,7 +14,9 @@
     (define _brush brush)
     (define _coord (cons 0 0))
     (define _blocks '())
-    (define _rotated #f)
+    (define _rotatable #t)
+    (define _toggle #f)
+    (define _clockwise #t)
     
     ;;constructor
     (define (constructor)
@@ -76,35 +78,45 @@
     (define/public (get-type)
       _type)
     
-    ;;get if piece is rotated
-    (define/public (rotated?)
-      _rotated)
-    
+    ;; get if piece is rotatable
+    (define/public (rotatable?)
+      _rotatable)
     
     ;;rotate piece
     (define/public (rotate)
-      (if _rotated
-          (set! _rotated #f)
-          (set! _rotated #t))
-      (for-each 
+      (if _toggle (set! _clockwise (not _clockwise)))
+      (for-each
        (lambda (block)
-         (send block set-coord! (assoc-list)
-               (let ((placement (send block get-coord)))
-                 (send block set-coord! 
-                       ; counter clockwise rotation
-                       (cond
-                         ((equal? placement (cons 0 1))   (cons 1 0))
-                         ((equal? placement (cons 0 -1))  (cons -1 0))
-                         ((equal? placement (cons 1 0 ))  (cons 0 -1))
-                         ((equal? placement (cons 1 1))   (cons 1 -1))
-                         ((equal? placement (cons 1 -1))  (cons -1 -1))
-                         ((equal? placement (cons -1 0))  (cons 0 1))
-                         ((equal? placement (cons -1 1))  (cons 1 1))
-                         ((equal? placement (cons -1 -1)) (cons -1 1))
-                         ((equal? placement (cons 0 2))   (cons 2 0))
-                         (else placement)))))
-         _pieces)))
+         (send block set-coord! (rotate-coord block _clockwise)))
+       _blocks))
+
+    ; counter clockwise rotation
+    (define/private (rotate-coord block clockwise)
+      (let ((placement (send block get-coord)))
+        (if clockwise
+            (cond
+              ((equal? placement (cons 0 1))   (cons -1 0))
+              ((equal? placement (cons 0 -1))  (cons 1 0))
+              ((equal? placement (cons 1 0 ))  (cons 0 1))
+              ((equal? placement (cons 1 1))   (cons -1 1))
+              ((equal? placement (cons 1 -1))  (cons 1 1))
+              ((equal? placement (cons -1 0))  (cons 0 -1))
+              ((equal? placement (cons -1 1))  (cons -1 -1))
+              ((equal? placement (cons -1 -1)) (cons 1 -1))
+              ((equal? placement (cons 2 0))   (cons 0 2))
+              (else placement))            
+            (cond
+              ((equal? placement (cons 0 1))   (cons 1 0))
+              ((equal? placement (cons 0 -1))  (cons -1 0))
+              ((equal? placement (cons 1 0 ))  (cons 0 -1))
+              ((equal? placement (cons 1 1))   (cons 1 -1))
+              ((equal? placement (cons 1 -1))  (cons -1 -1))
+              ((equal? placement (cons -1 0))  (cons 0 1))
+              ((equal? placement (cons -1 1))  (cons 1 1))
+              ((equal? placement (cons -1 -1)) (cons -1 1))
+              ((equal? placement (cons 0 2))   (cons 2 0))
+              (else placement)))))
     ))
-   
+  
 
 ;;(define test-piece (make-object piece% 'test '((1 0) (-1 0)) *red-brush*))
