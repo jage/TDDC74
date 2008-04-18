@@ -36,6 +36,14 @@
     (define/public (get-coord)
       _coord)
     
+    ;;get piece absolute x-coord
+    (define/public (get-x-coord)
+      (car (get-coord)))
+    
+    ;;get piece absolute y-coord
+    (define/public (get-y-coord)
+      (cdr (get-coord)))
+    
     ;;set absolute coordinates
     (define/public (set-coord! coord)
       (set! _coord coord))
