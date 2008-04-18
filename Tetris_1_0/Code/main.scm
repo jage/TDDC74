@@ -2,7 +2,6 @@
 
 ;;MAIN
 
-
 ;; Load all files
 (load "graphics.scm")
 (load "graphics_engine.scm")
@@ -19,23 +18,21 @@
 (define board-height 20) ; pieces
 
 ;; '(0 0) 
-(define I '((0 -2) (0 -1) (0 0) (0 1))) ; Cyan
-(define J '((-1 -1) (-1 0) (0 0) (1 0))) ; Blue
-(define L '((-1 0) (0 0) (1 0) (1 1))) ; Orange
-(define O '((0 0) (1 0) (1 1) (0 1))) ; Yellow
+(define I '((0 1) (0 0) (0 -1) (0 -2))) ; Cyan
+(define J '((-1 -1) (0 -1) (0 0) (0 1))) ; Blue
+(define L '((1 -1) (0 -1) (0 0) (0 1))) ; Orange
+(define O '((0 0) (0 -1) (1 0) (1 -1))) ; Yellow
+(define S '((-1 0) (0 0) (0 1) (1 1)))
+(define Z '((-1 1) (0 1) (0 0) (1 0)))
+(define T '((-1 0) (0 0) (1 0) (0 1)))
 ; S Green
 ; T Purple
 ; Z Red
 
-(define T '((0 1) (-1 0) (0 -1)))
-(define S '((0 1) (1 1) (-1 0)))
-(define L '((-1 0) (1 0)))
-(define I '((-1 0) (1 0) (2 0)))
-
 (define *board* (make-object board% (cons 10 20) 20))
-(send *board* add-piece-on-board-custom (make-object piece% 'S S *yellow-brush*) (cons 3 8) #f)
+;(send *board* add-piece-on-board-default (make-object piece% 'J J *yellow-brush*))
 
-(send *board* add-piece-on-board-default (make-object piece% 'L L *green-brush*))
+(send *board* add-piece-on-board-custom (make-object piece% 'L T *green-brush*) (cons 5 10) #f)
 
 (define (handle-key-event key)
   (let ((active-piece (send *board* get-active-piece)))
