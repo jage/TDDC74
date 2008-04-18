@@ -18,7 +18,6 @@
     
     ;;constructor
     (define (constructor)
-      (add-block! (cons 0 0)) ;;center block
       (create-piece _block-list))
     
     ;; creates piece from block list 
