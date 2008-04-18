@@ -1,6 +1,3 @@
-;; Dummy
-(define (update) #t)
-
 (define (draw)
   (clear)
   (draw-pieces (send *board* get-pieces))

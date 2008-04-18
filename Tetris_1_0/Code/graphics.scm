@@ -144,10 +144,13 @@
 
 (define *sleep-time* (fps->seconds 24))
 
+(define counter 0)
 (define (loop)
   (when *should-run*
+    (set! counter (+ counter 1))
     (update)
     (draw)
+    (if (= counter 24) (set! counter 1))
     (sleep *sleep-time*)
     (loop)))
 
