@@ -15,7 +15,7 @@
 
 (define (draw)
   (clear)
-  (send *board* draw-board)
+  (draw-pieces (send *board* get-pieces))
   (show))
 
 (define window-width 200)
@@ -25,28 +25,40 @@
 (define board-width 10)  ; pieces
 (define board-height 20) ; pieces
 
+;; '(0 0) 
+(define I '((0 -2) (0 -1) (0 0) (0 1))) ; Cyan
+(define J '((-1 -1) (-1 0) (0 0) (1 0))) ; Blue
+(define L '((-1 0) (0 0) (1 0) (1 1))) ; Orange
+(define O '((0 0) (1 0) (1 1) (0 1))) ; Yellow
+; S Green
+; T Purple
+; Z Red
+
 (define T '((0 1) (-1 0) (0 -1)))
 (define S '((0 1) (1 1) (-1 0)))
-(define L '((0 -1) (0 1) (1 1)))
+(define L '((1 0)))
 (define I '((-1 0) (1 0) (2 0)))
 
-(define *board* (make-object board% (cons 10 20)))
+(define *board* (make-object board% (cons 10 20) 20))
 (send *board* add-piece-on-board (make-object piece% 'L L *yellow-brush*))
 
 (define (draw-pieces list-of-pieces)
-  (if (not (null? list-of-pieces))
-      (begin
-        (draw-piece (car list-of-pieces))
-        (draw-pieces (cdr list-of-pieces)))))
+  (for-each
+   (lambda (piece)
+     (draw-piece piece))
+   list-of-pieces))
 
 (define (draw-piece piece)
-  (if (not (null? piece))
-      (begin
-        (draw-block (car piece))
-        (draw-piece (cdr piece)))))
+  (for-each
+   (lambda (block)
+     (draw-block block))
+   (send piece get-blocks-coords)))
 
 (define (draw-block block)
-  (draw-rectangle (* (car block) piece-size) (* (cadr block) piece-size) piece-size piece-size *black-pen* *blue-brush*))
+  (draw-rectangle 
+   (* (car block) (send *board* get-pixels-per-unit)) 
+   (* (cdr block) (send *board* get-pixels-per-unit)) 
+   (send *board* get-pixels-per-unit) (send *board* get-pixels-per-unit) *black-pen* *blue-brush*))
 
 (define (handle-key-event key)
   (let ((active-piece (send *board* get-active-piece)))
@@ -56,12 +68,12 @@
        (send active-piece rotate))
       ((eq? key 'down) 
        (display "down\n")
-       (send *board* move-piece active-piece 0 -1))
+       (send *board* move-piece active-piece (cons 0 -1)))
       ((eq? key 'left)
        (display "left\n")
-       (send *board* move-piece active-piece -1 0))
+       (send *board* move-piece active-piece (cons -1 0)))
       ((eq? key 'right)
        (display "right\n")
-       (send *board* move-piece active-piece 1 0)))))
+       (send *board* move-piece active-piece (cons 1 0))))))
 
 (start-loop)
