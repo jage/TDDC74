@@ -2,7 +2,6 @@
 
 ;;MAIN
 
-
 ;; Load all files
 
 (load "graphics.scm")
@@ -20,11 +19,14 @@
 (define board-height 20) ; pieces
 
 ;; '(0 0) 
-(define I '((0 -2) (0 -1) (0 0) (0 1))) ; Cyan
-(define J '((-1 -1) (-1 0) (0 0) (1 0))) ; Blue
-(define L '((-1 0) (0 0) (1 0) (1 1))) ; Orange
-(define O '((0 0) (1 0) (1 1) (0 1))) ; Yellow
-(define S '((-1 0) (0 0) (0 1) (1 1))) ; Green
+(define I '((0 1) (0 0) (0 -1) (0 -2))) ; Cyan
+(define J '((-1 -1) (0 -1) (0 0) (0 1))) ; Blue
+(define L '((1 -1) (0 -1) (0 0) (0 1))) ; Orange
+(define O '((0 0) (0 -1) (1 0) (1 -1))) ; Yellow
+(define S '((-1 0) (0 0) (0 1) (1 1)))
+(define Z '((-1 1) (0 1) (0 0) (1 0)))
+(define T '((-1 0) (0 0) (1 0) (0 1)))
+; S Green
 ; T Purple
 ; Z Red
 
