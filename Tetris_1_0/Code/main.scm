@@ -45,8 +45,7 @@
 (define (handle-key-event key)
   (let ((active-piece (send *board* get-active-piece)))
     (cond
-      ((eq? key "q")
-       (display "q")
+      ((eq? key #\q)
        (hide-gui *gui*))
       ((eq? key 'up) 
        (display "up\n")
