@@ -114,6 +114,8 @@
   (send the-pen-list find-or-create-pen "cyan" 2 'solid))
 (define *magenta-pen* 
   (send the-pen-list find-or-create-pen "magenta" 2 'solid))
+(define *orange-pen* 
+  (send the-pen-list find-or-create-pen "orange" 2 'solid))
 
 (define *yellow-brush* 
   (send the-brush-list find-or-create-brush "yellow" 'solid))
@@ -131,6 +133,8 @@
   (send the-brush-list find-or-create-brush "cyan" 'solid))
 (define *magenta-brush* 
   (send the-brush-list find-or-create-brush "magenta" 'solid))
+(define *orange-brush* 
+  (send the-brush-list find-or-create-brush "orange" 'solid))
 
 ;; --------------------------------------------------------------------
 ;; The animation loop
