@@ -21,14 +21,24 @@
 (define pieces (vector I-piece% J-piece% L-piece% O-piece% S-piece% Z-piece% T-piece%))
 
 (define create-random-piece (lambda () (make-object (vector-ref pieces (random 7)))))
+;(define create-random-piece (lambda () (make-object I-piece%)))
 
 (define *board* (make-object board% (cons 10 20) 20))
 
 (define (update)
   (if (= counter 24)
       (send *board* move-piece (send *board* get-active-piece) (cons 0 -1))
-      (if (= 0 (send (send *board* get-active-piece) get-y-coord))
+      (if (piece-on-bottom? (send *board* get-active-piece))
           (send *board* add-piece-on-board-default (create-random-piece)))))
+
+(define (piece-on-bottom? piece)
+  (define bottom false)
+  (for-each
+   (lambda (coord)
+     (if (= 0 (cdr coord))
+         (set! bottom true)))
+   (send piece get-blocks-coords))
+  bottom)
 
 (send *board* add-piece-on-board-default (create-random-piece))
 
