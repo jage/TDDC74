@@ -18,17 +18,9 @@
 (define board-width 10)  ; pieces
 (define board-height 20) ; pieces
 
-;; '(0 0) 
-(define I '((0 1) (0 0) (0 -1) (0 -2))) ; Cyan
-(define J '((-1 -1) (0 -1) (0 0) (0 1))) ; Blue
-(define L '((1 -1) (0 -1) (0 0) (0 1))) ; Orange
-(define O '((0 0) (0 -1) (1 0) (1 -1))) ; Yellow
-(define S '((-1 0) (0 0) (0 1) (1 1)))
-(define Z '((-1 1) (0 1) (0 0) (1 0)))
-(define T '((-1 0) (0 0) (1 0) (0 1)))
-; S Green
-; T Purple
-; Z Red
+(define pieces (vector I-piece% J-piece% L-piece% O-piece% S-piece% Z-piece% T-piece%))
+
+(define create-random-piece (lambda () (make-object (vector-ref pieces (random 7)))))
 
 (define *board* (make-object board% (cons 10 20) 20))
 
@@ -36,11 +28,9 @@
   (if (= counter 24)
       (send *board* move-piece (send *board* get-active-piece) (cons 0 -1))
       (if (= 0 (send (send *board* get-active-piece) get-y-coord))
-          (send *board* add-piece-on-board-default (make-object piece% 'L L *green-brush*)))))
+          (send *board* add-piece-on-board-default (create-random-piece)))))
 
-          
-
-(send *board* add-piece-on-board-default (make-object piece% 'L L *green-brush*))
+(send *board* add-piece-on-board-default (create-random-piece))
 
 (define (handle-key-event key)
   (let ((active-piece (send *board* get-active-piece)))
