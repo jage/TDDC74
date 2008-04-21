@@ -20,7 +20,7 @@
     (define _brush brush)
     (define _coord (cons 0 0))
     (define _blocks '())
-    (define _clockwise #t)
+    (define _clockwise #f)
     
     ;;constructor
     (define (constructor)
@@ -93,11 +93,11 @@
     (define/public (rotate)
       (if (rotate?)
           (begin
-            (if (toggle?) (set! _clockwise (not _clockwise)))
             (for-each
              (lambda (block)
                (send block set-coord! (rotate-coord block _clockwise)))
-             _blocks))
+             _blocks)
+            (if (toggle?) (set! _clockwise (not _clockwise))))
           #f))
 
     ; Counter clockwise rotation
@@ -134,7 +134,8 @@
               (else placement)))))
     ))
 
-(define I '((0 1) (0 0) (0 -1) (0 -2)))  ; Cyan
+; The I-piece is broken ...
+(define I '((-1 0) (0 0) (1 0) (2 0)))   ; Cyan
 (define J '((-1 -1) (0 -1) (0 0) (0 1))) ; Blue
 (define L '((1 -1) (0 -1) (0 0) (0 1)))  ; Orange
 (define O '((0 0) (0 -1) (1 0) (1 -1)))  ; Yellow
@@ -187,6 +188,6 @@
 (define T-piece%
   (class piece%
     (override toggle? rotate?)
-    (define (toggle?) #t)
+    (define (toggle?) #f)
     (define (rotate?) #t)
     (super-new (type 'T) (block-list T) (brush *magenta-brush*))))
