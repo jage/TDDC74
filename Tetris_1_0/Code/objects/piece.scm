@@ -1,12 +1,18 @@
 ;;TETRIS
 
+; XXX TMP
+;(load "block.scm")
+;(load "../graphics.scm")
+
+
 ;;Piece object
 
+; Parent class for the pieces ...
 (define piece%
   (class object%
     (super-new)
     
-    ;;class fields
+    ;; Fields
     (init type block-list brush)
     
     (define _type type)
@@ -14,8 +20,6 @@
     (define _brush brush)
     (define _coord (cons 0 0))
     (define _blocks '())
-    (define _rotatable #t)
-    (define _toggle #f)
     (define _clockwise #t)
     
     ;;constructor
@@ -67,7 +71,7 @@
         (for-each
          (lambda (block)
            (set! coords-list (append coords-list (list (get-block-coord block)))))
-         _blocks)
+         (get-blocks))
         coords-list))
     
     ;;get piece brush
@@ -79,18 +83,30 @@
       _type)
     
     ;; get if piece is rotatable
-    (define/public (rotatable?)
-      _rotatable)
+    (define/public (rotate?)
+      #f)
+
+    (define/public (toggle?)
+      #f)
     
     ;;rotate piece
     (define/public (rotate)
-      (if _toggle (set! _clockwise (not _clockwise)))
-      (for-each
-       (lambda (block)
-         (send block set-coord! (rotate-coord block _clockwise)))
-       _blocks))
+      (if (rotate?)
+          (begin
+            (if (toggle?) (set! _clockwise (not _clockwise)))
+            (for-each
+             (lambda (block)
+               (send block set-coord! (rotate-coord block _clockwise)))
+             _blocks))
+          #f))
 
-    ; counter clockwise rotation
+    ; Counter clockwise rotation
+    ; Keep the pieces inside this shape ...
+    ; O = Origo (0 . 0)
+    ;  X X X
+    ;  X O X X
+    ;  X X X
+    ;    X
     (define/private (rotate-coord block clockwise)
       (let ((placement (send block get-coord)))
         (if clockwise
@@ -117,6 +133,60 @@
               ((equal? placement (cons 0 2))   (cons 2 0))
               (else placement)))))
     ))
-  
 
-;;(define test-piece (make-object piece% 'test '((1 0) (-1 0)) *red-brush*))
+(define I '((0 1) (0 0) (0 -1) (0 -2)))  ; Cyan
+(define J '((-1 -1) (0 -1) (0 0) (0 1))) ; Blue
+(define L '((1 -1) (0 -1) (0 0) (0 1)))  ; Orange
+(define O '((0 0) (0 -1) (1 0) (1 -1)))  ; Yellow
+(define S '((-1 0) (0 0) (0 1) (1 1)))   ; Green
+(define Z '((-1 1) (0 1) (0 0) (1 0)))   ; Red
+(define T '((-1 0) (0 0) (1 0) (0 1)))   ; Magenta
+
+(define I-piece%
+  (class piece%
+    (override toggle? rotate?)
+    (define (toggle?) #t)
+    (define (rotate?) #t)
+    (super-new (type 'I) (block-list I) (brush *cyan-brush*))))
+
+(define J-piece%
+  (class piece%
+    (override toggle? rotate?)
+    (define (toggle?) #f)
+    (define (rotate?) #t)
+    (super-new (type 'J) (block-list J) (brush *blue-brush*))))
+
+(define L-piece%
+  (class piece%
+    (override toggle? rotate?)
+    (define (toggle?) #f)
+    (define (rotate?) #t)
+    (super-new (type 'L) (block-list L) (brush *orange-brush*))))
+
+(define O-piece%
+  (class piece%
+    (override toggle? rotate?)
+    (define (toggle?) #f)
+    (define (rotate?) #f)
+    (super-new (type 'O) (block-list O) (brush *yellow-brush*))))
+
+(define S-piece%
+  (class piece%
+    (override toggle? rotate?)
+    (define (toggle?) #t)
+    (define (rotate?) #t)
+    (super-new (type 'S) (block-list S) (brush *green-brush*))))
+
+(define Z-piece%
+  (class piece%
+    (override toggle? rotate?)
+    (define (toggle?) #t)
+    (define (rotate?) #t)
+    (super-new (type 'Z) (block-list Z) (brush *red-brush*))))
+
+(define T-piece%
+  (class piece%
+    (override toggle? rotate?)
+    (define (toggle?) #t)
+    (define (rotate?) #t)
+    (super-new (type 'T) (block-list T) (brush *magenta-brush*))))
