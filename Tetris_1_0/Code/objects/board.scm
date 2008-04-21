@@ -69,15 +69,15 @@
           (set-active-piece! piece)))
     
     ;;moves a piece on the board
-    (define/public (move-piece piece coord)
-      (if (and (not (null? piece)) (move-possible? piece coord))
+    (define/public (move-piece piece delta-coord)
+      (if (and (not (null? piece)) (move-possible? piece delta-coord))
 ;          DEBUG: Check if the piece could be moved
 ;          (begin
 ;          (display "MOVE PIECE")
 ;          (newline)
 ;          (display "old coord: ")
 ;          (display (send piece get-coord))
-          (send piece set-coord! (cons (+ (car coord) (send piece get-x-coord)) (+ (cdr coord) (send piece get-y-coord))))
+          (send piece set-coord! (cons (+ (car delta-coord) (send piece get-abs-x)) (+ (cdr delta-coord) (send piece get-abs-y))))
 ;          (display " new coord: ")
 ;          (display (send piece get-coord))
 ;          newline))
@@ -85,16 +85,16 @@
           #f))
     
     ;;is move possible?
-    (define/public (move-possible? piece coord)
+    (define/public (move-possible? piece delta-coord)
       (define (worker blocks)
         (if (null? blocks)
             #t
             (begin
               (let* ((block (car blocks))
-                     (new-x (+ (+ (send piece get-x-coord) (car coord)) (send block get-x)))
-                     (new-y (+ (+ (send piece get-y-coord) (cdr coord)) (send block get-y))))
+                     (new-x (+ (car delta-coord) (send block get-abs-x)))
+                     (new-y (+ (cdr delta-coord) (send block get-abs-y))))
 ;                DEBUG: Check coordinates
-;                (display "MOVE POSSIBLE?"
+;                (display "MOVE POSSIBLE?")
 ;                (newline)
 ;                (display (send block get-coord))
 ;                (display new-x)
@@ -108,8 +108,18 @@
                     (worker (cdr blocks))
                     #f)))))
       (worker (send piece get-blocks)))
+    
+    ;;checks if piece collides with other pieces on the board
+;    (define/public (collide? piece)
+;      (for-each
+;       (lambda (block)
+;         
     ))
+
+;(load "piece.scm")
+;(load "block.scm")
+;(load ".../graphics.scm")
 
 ;(define test-board (make-object board% (cons 10 20) 20))
 ;
-;(send test-board add-piece-on-board (make-object piece% 'test '((1 0) (-1 0)) *red-brush*))
+;(send test-board add-piece-on-board-default (make-object piece% 'test '((1 0) (-1 0)) *red-brush*))

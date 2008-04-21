@@ -42,11 +42,11 @@
       _coord)
     
     ;;get piece absolute x-coord
-    (define/public (get-x-coord)
+    (define/public (get-abs-x)
       (car (get-coord)))
     
     ;;get piece absolute y-coord
-    (define/public (get-y-coord)
+    (define/public (get-abs-y)
       (cdr (get-coord)))
     
     ;;set absolute coordinates
@@ -55,24 +55,20 @@
     
     ;;add block to piece
     (define/public (add-block! rel-coord)
-      (set! _blocks (append _blocks (list (make-object block% rel-coord)))))
+      (set! _blocks (append _blocks (list (make-object block% rel-coord this)))))
     
     ;;get blocks
     (define/public (get-blocks)
       _blocks)
     
-    ;;get real block coord
-    (define/public (get-block-coord block)
-      (cons (+ (get-x-coord) (send block get-x)) (+ (get-y-coord) (send block get-y))))
-    
-    ;;get blocks absolute coordinates
-    (define/public (get-blocks-coords)
-      (let ((coords-list '()))
-        (for-each
-         (lambda (block)
-           (set! coords-list (append coords-list (list (get-block-coord block)))))
-         (get-blocks))
-        coords-list))
+;    ;;get blocks absolute coordinates
+;    (define/public (get-blocks-coords)
+;      (let ((coords-list '()))
+;        (for-each
+;         (lambda (block)
+;           (set! coords-list (append coords-list (list (get-block-coord block)))))
+;         (get-blocks))
+;        coords-list))
     
     ;;get piece brush
     (define/public (get-brush)
@@ -95,7 +91,7 @@
           (begin
             (for-each
              (lambda (block)
-               (send block set-coord! (rotate-coord block _clockwise)))
+               (send block set-rel-coord! (rotate-coord block _clockwise)))
              _blocks)
             (if (toggle?) (set! _clockwise (not _clockwise))))
           #f))
@@ -108,7 +104,7 @@
     ;  X X X
     ;    X
     (define/private (rotate-coord block clockwise)
-      (let ((placement (send block get-coord)))
+      (let ((placement (send block get-rel-coord)))
         (if clockwise
             (cond
               ((equal? placement (cons 0 1))   (cons -1 0))

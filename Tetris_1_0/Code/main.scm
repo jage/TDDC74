@@ -34,10 +34,10 @@
 (define (piece-on-bottom? piece)
   (define bottom false)
   (for-each
-   (lambda (coord)
-     (if (= 0 (cdr coord))
+   (lambda (block)
+     (if (= 0 (send block get-abs-y))
          (set! bottom true)))
-   (send piece get-blocks-coords))
+   (send piece get-blocks))
   bottom)
 
 (send *board* add-piece-on-board-default (create-random-piece))

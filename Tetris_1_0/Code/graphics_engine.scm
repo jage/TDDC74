@@ -12,8 +12,8 @@
 (define (draw-piece piece)
   (for-each
    (lambda (block)
-     (draw-block block (send piece get-brush)))
-   (send piece get-blocks-coords)))
+     (draw-block (send block get-abs-coord) (send piece get-brush)))
+   (send piece get-blocks)))
 
 (define (draw-block block-coord brush)
   (draw-rectangle 
