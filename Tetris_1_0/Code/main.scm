@@ -35,10 +35,11 @@
             (begin
               (set! *new-piece* #f)
               (send *board* add-piece-on-board-default (create-random-piece))))
-        (send *board* move-piece (send *board* get-active-piece) (cons 0 -1)))
+        (if (not (send *board* move-piece (send *board* get-active-piece) (cons 0 -1)))
+            (set! *new-piece* #t))
       (begin
         (if (piece-on-bottom? (send *board* get-active-piece))
-            (set! *new-piece* #t)))))
+            (set! *new-piece* #t))))))
 
 (define (piece-on-bottom? piece)
   (define bottom #f)
