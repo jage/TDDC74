@@ -104,7 +104,8 @@
 ;                (newline)
 ;                ------------------------
                 (if (and (>= new-x 0) (<= new-x (- (get-width) 1))
-                         (>= new-y 0) (<= new-y (- (get-height) 1)))
+                         (>= new-y 0) (<= new-y (- (get-height) 1))
+                         (not (collide? piece delta-coord)))
                     (worker (cdr blocks))
                     #f)))))
       (worker (send piece get-blocks)))
