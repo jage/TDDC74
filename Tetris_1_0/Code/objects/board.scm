@@ -119,6 +119,29 @@
             (send this get-pieces)))
          (send piece get-blocks))
         collision))
+    
+    (define/public (filled-rows)
+      (let* ((i (- (send this get-height) 1))
+             (j 0)
+             (rows '()))
+        (define (row-loop)
+          (for-each
+           (lambda (piece)
+             (for-each
+              (lambda (block)
+                (if (= i (send block get-abs-y))
+                    (set! j (+ 1 j)))) ;;block on the i:th row
+              (send piece get-blocks)))
+           (send this get-pieces))
+          (if (= j (send this get-width)) ;;row i filled
+              (set! rows (append (list i) rows)))
+          (set! i (- i 1)) ;;check next row
+          (set! j 0) ;;set column counter to zero
+          (display i)
+          (if (< i 0) ;;all rows are checked
+              rows
+              (row-loop)))
+        (row-loop))) ;;start the loop
     ))
 
 ;(load "piece.scm")
@@ -129,4 +152,5 @@
 ;
 ;(send test-board add-piece-on-board-custom (make-object piece% 'test '((-1 0) (0 0) (1 0)) *red-brush*) (cons 1 0) #t)
 ;
-;(send test-board add-piece-on-board-custom (make-object piece% 'test '((-1 0) (0 0) (1 0)) *red-brush*) (cons 4 0) #t)
+;(send test-board add-piece-on-board-custom (make-object piece% 'test '((0 0) (1 0) (2 0) (3 0) (4 0) (5 0) (6 0) (7 0) (8 0) (9 0)) *red-brush*) (cons 0 0) #f)
+;(send test-board add-piece-on-board-custom (make-object piece% 'test '((0 0) (1 0) (2 0) (3 0) (4 0) (5 0) (6 0) (7 0) (8 0) (9 0)) *red-brush*) (cons 0 7) #f)
