@@ -27,19 +27,13 @@
 
 ; The new piece code isn't optimal, if one drops down a piece when the 
 ;  counter is at 23, the time to move it sideways will be 1/24 sec ...
-(define *new-piece* #f)
 (define (update)
   (if (= counter 24)
       (begin
-        (if *new-piece*
-            (begin
-              (set! *new-piece* #f)
-              (send *board* add-piece-on-board-default (create-random-piece))))
-        (if (not (send *board* move-piece (send *board* get-active-piece) (cons 0 -1)))
-            (set! *new-piece* #t))
-      (begin
-        (if (piece-on-bottom? (send *board* get-active-piece))
-            (set! *new-piece* #t))))))
+        (if (or (piece-on-bottom? (send *board* get-active-piece))
+                (not (send *board* move-piece (send *board* get-active-piece) (cons 0 -1))))
+            (send *board* add-piece-on-board-default (create-random-piece))))))
+            
 
 (define (piece-on-bottom? piece)
   (define bottom #f)
