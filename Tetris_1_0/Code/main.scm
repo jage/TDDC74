@@ -37,11 +37,13 @@
       (begin
         (if (or (piece-on-bottom? (send *board* get-active-piece))
                 (not (send *board* move-piece (send *board* get-active-piece) (cons 0 -1))))
-            (if (not (send *board* add-piece-on-board-default (create-random-piece)))
-                (begin
-                  (display "GAME OVER DUDE!")
-                  (stop-loop)))))))
-            
+            (begin
+              (display (send *board* filled-rows))
+              (if (not (send *board* add-piece-on-board-default (create-random-piece)))
+                  (begin
+                    (display "GAME OVER DUDE!")
+                  (stop-loop))))))))
+  
 
 (define (piece-on-bottom? piece)
   (define bottom #f)
