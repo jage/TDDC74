@@ -61,14 +61,14 @@
     (define/public (get-blocks)
       _blocks)
     
-;    ;;get blocks absolute coordinates
-;    (define/public (get-blocks-coords)
-;      (let ((coords-list '()))
-;        (for-each
-;         (lambda (block)
-;           (set! coords-list (append coords-list (list (get-block-coord block)))))
-;         (get-blocks))
-;        coords-list))
+    ;    ;;get blocks absolute coordinates
+    ;    (define/public (get-blocks-coords)
+    ;      (let ((coords-list '()))
+    ;        (for-each
+    ;         (lambda (block)
+    ;           (set! coords-list (append coords-list (list (get-block-coord block)))))
+    ;         (get-blocks))
+    ;        coords-list))
     
     ;;get piece brush
     (define/public (get-brush)
@@ -81,21 +81,34 @@
     ;; get if piece is rotatable
     (define/public (rotate?)
       #f)
-
+    
     (define/public (toggle?)
       #f)
+    
+    ; Watch out for loops of DEATH!
+    (define/public (revert-rotation!)
+      (rotate-worker (not _clockwise)))
     
     ;;rotate piece
     (define/public (rotate)
       (if (rotate?)
           (begin
-            (for-each
-             (lambda (block)
-               (send block set-rel-coord! (rotate-coord block _clockwise)))
-             _blocks)
-            (if (toggle?) (set! _clockwise (not _clockwise))))
-          #f))
-
+            (rotate-worker _clockwise)
+            (if (revert-rotation?) 
+                (revert-rotation!)
+                (if (toggle?) (set! _clockwise (not _clockwise))))))
+      #f)
+    
+    (define/private (revert-rotation?)
+      (or (send *board* collide? this (cons 0 0))
+          (not (send *board* move-possible? this (cons 0 0)))))
+    
+    (define/private (rotate-worker clockwise)
+      (for-each
+       (lambda (block)
+         (send block set-rel-coord! (rotate-coord block clockwise)))
+       _blocks))
+    
     ; Counter clockwise rotation
     ; Keep the pieces inside this shape ...
     ; O = Origo (0 . 0)
