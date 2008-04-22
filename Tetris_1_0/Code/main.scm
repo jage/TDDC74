@@ -25,18 +25,27 @@
 
 (define *board* (make-object board% (cons 10 20) 20))
 
+; The new piece code isn't optimal, if one drops down a piece when the 
+;  counter is at 23, the time to move it sideways will be 1/24 sec ...
+(define *new-piece* #f)
 (define (update)
   (if (= counter 24)
-      (send *board* move-piece (send *board* get-active-piece) (cons 0 -1))
-      (if (piece-on-bottom? (send *board* get-active-piece))
-          (send *board* add-piece-on-board-default (create-random-piece)))))
+      (begin
+        (if *new-piece*
+            (begin
+              (set! *new-piece* #f)
+              (send *board* add-piece-on-board-default (create-random-piece))))
+        (send *board* move-piece (send *board* get-active-piece) (cons 0 -1)))
+      (begin
+        (if (piece-on-bottom? (send *board* get-active-piece))
+            (set! *new-piece* #t)))))
 
 (define (piece-on-bottom? piece)
-  (define bottom false)
+  (define bottom #f)
   (for-each
    (lambda (block)
      (if (= 0 (send block get-abs-y))
-         (set! bottom true)))
+         (set! bottom #t)))
    (send piece get-blocks))
   bottom)
 
@@ -46,18 +55,15 @@
   (let ((active-piece (send *board* get-active-piece)))
     (cond
       ((eq? key #\q)
-       (hide-gui *gui*))
+       (hide-gui *gui*)
+       (stop-loop))
       ((eq? key 'up) 
-       (display "up\n")
        (send active-piece rotate))
       ((eq? key 'down) 
-       (display "down\n")
        (send *board* move-piece active-piece (cons 0 -1)))
       ((eq? key 'left)
-       (display "left\n")
        (send *board* move-piece active-piece (cons -1 0)))
       ((eq? key 'right)
-       (display "right\n")
        (send *board* move-piece active-piece (cons 1 0))))))
 
 (start-loop)
