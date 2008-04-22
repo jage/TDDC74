@@ -110,7 +110,7 @@
       (worker (send piece get-blocks)))
     
     ;;checks if piece collides with other pieces on the board
-    (define/public (collide? piece)
+    (define/public (collide? piece delta-coord)
       (let ((collision #f))
         (for-each
          (lambda (block)
@@ -119,7 +119,8 @@
               (for-each
                (lambda (board-piece-block)
                  (if (not (eq? board-piece piece))
-                     (if (and (= (send block get-abs-x) (send board-piece-block  get-abs-x)) (= (send block get-abs-y) (send board-piece-block get-abs-y)))
+                     (if (and (= (+ (send block get-abs-x) (car delta-coord)) (send board-piece-block get-abs-x))
+                              (= (+ (send block get-abs-y) (cdr delta-coord)) (send board-piece-block get-abs-y)))
                          (set! collision #t))))
                (send board-piece get-blocks)))
             (send this get-pieces)))
