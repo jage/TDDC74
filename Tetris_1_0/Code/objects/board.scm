@@ -134,8 +134,7 @@
                 (if (= i (send block get-abs-y))
                     (begin
                       (set! j (+ 1 j))
-                      (set! blocks (append (list block) blocks))
-                      (display (send block get-abs-coord))))) ;;block on the i:th row
+                      (set! blocks (append (list block) blocks)))))
               (send piece get-blocks)))
            (send this get-pieces))
           (if (= j (send this get-width)) ;;row i filled
