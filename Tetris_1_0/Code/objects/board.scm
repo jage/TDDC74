@@ -138,7 +138,6 @@
               (set! rows (append (list i) rows)))
           (set! i (- i 1)) ;;check next row
           (set! j 0) ;;set column counter to zero
-          (display i)
           (if (< i 0) ;;all rows are checked
               rows
               (row-loop)))
