@@ -20,7 +20,7 @@
     (define _brush brush)
     (define _coord (cons 0 0))
     (define _blocks '())
-    (define _clockwise #f)
+    (define _clockwise #t)
     
     ;;constructor
     (define (constructor)
