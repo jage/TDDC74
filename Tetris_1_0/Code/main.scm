@@ -28,7 +28,11 @@
         (if (or (piece-on-bottom? (send *board* get-active-piece))
                 (not (send *board* move-piece (send *board* get-active-piece) (cons 0 -1))))
             (begin
-              (display (send *board* filled-rows))
+              (let ((blocks-to-remove (send *board* get-blocks-on-filled-rows)))
+                (if (not (equal? '() blocks-to-remove))
+                    (for-each
+                     (lambda (block) (send (send block get-parent-piece) remove-block block))
+                     blocks-to-remove)))
               (if (not (send *board* add-piece-on-board-default (create-random-piece)))
                   (begin
                     (display "GAME OVER DUDE!")

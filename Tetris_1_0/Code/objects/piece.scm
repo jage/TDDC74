@@ -141,6 +141,11 @@
               ((equal? placement (cons -1 -1)) (cons -1 1))
               ((equal? placement (cons 0 2))   (cons 2 0))
               (else placement)))))
+    
+    (define/public (remove-block block)
+      (set! _blocks (remove block _blocks)))
+      
+    
     ))
 
 ; The I-piece is broken ...
