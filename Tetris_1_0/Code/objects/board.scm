@@ -110,16 +110,29 @@
       (worker (send piece get-blocks)))
     
     ;;checks if piece collides with other pieces on the board
-;    (define/public (collide? piece)
-;      (for-each
-;       (lambda (block)
-;         
+    (define/public (collide? piece)
+      (let ((collision #f))
+        (for-each
+         (lambda (block)
+           (for-each
+            (lambda (board-piece)
+              (for-each
+               (lambda (board-piece-block)
+                 (if (not (eq? board-piece piece))
+                     (if (and (= (send block get-abs-x) (send board-piece-block  get-abs-x)) (= (send block get-abs-y) (send board-piece-block get-abs-y)))
+                         (set! collision #t))))
+               (send board-piece get-blocks)))
+            (send this get-pieces)))
+         (send piece get-blocks))
+        collision))
     ))
 
 ;(load "piece.scm")
 ;(load "block.scm")
-;(load ".../graphics.scm")
-
+;(load "../graphics.scm")
+;
 ;(define test-board (make-object board% (cons 10 20) 20))
 ;
-;(send test-board add-piece-on-board-default (make-object piece% 'test '((1 0) (-1 0)) *red-brush*))
+;(send test-board add-piece-on-board-custom (make-object piece% 'test '((-1 0) (0 0) (1 0)) *red-brush*) (cons 1 0) #t)
+;
+;(send test-board add-piece-on-board-custom (make-object piece% 'test '((-1 0) (0 0) (1 0)) *red-brush*) (cons 4 0) #t)
