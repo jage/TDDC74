@@ -59,8 +59,9 @@
     (define/public (add-piece-on-board-default piece)
       (send piece set-coord! (cons (/ (get-width) 2) (- (get-height) 1)))
       (set! _pieces (append (list piece) _pieces))
-      (set-active-piece! piece))
-    
+      (set-active-piece! piece)
+      (not (collide? (send this get-active-piece) (cons 0 0))))
+   
     ;;add block on board (custom properties)
     (define/public (add-piece-on-board-custom piece coord active)
       (send piece set-coord! coord)

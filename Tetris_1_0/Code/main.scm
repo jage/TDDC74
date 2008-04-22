@@ -5,18 +5,22 @@
 ;; Load all files
 
 (load "graphics.scm")
-(load "graphics_engine.scm")
 (load "objects/block.scm")
 (load "objects/piece.scm")
 (load "objects/board.scm")
 
 
-(define window-width 200)
-(define window-height 400)
+(define (initiate-graphics)
+  (load "graphics_engine.scm"))
 
-(define piece-size 20)   ; pixels
-(define board-width 10)  ; pieces
-(define board-height 20) ; pieces
+
+;(define window-width 200)
+;(define window-height 400)
+;(define game-speed 250) ; ms
+
+;(define piece-size 20)   ; pixels
+;(define board-width 10)  ; pieces
+;(define board-height 20) ; pieces
 
 (define pieces (vector I-piece% J-piece% L-piece% O-piece% S-piece% Z-piece% T-piece%))
 
@@ -24,6 +28,7 @@
 ;(define create-random-piece (lambda () (make-object I-piece%)))
 
 (define *board* (make-object board% (cons 10 20) 20))
+(initiate-graphics)
 
 ; The new piece code isn't optimal, if one drops down a piece when the 
 ;  counter is at 23, the time to move it sideways will be 1/24 sec ...
@@ -32,7 +37,10 @@
       (begin
         (if (or (piece-on-bottom? (send *board* get-active-piece))
                 (not (send *board* move-piece (send *board* get-active-piece) (cons 0 -1))))
-            (send *board* add-piece-on-board-default (create-random-piece))))))
+            (if (not (send *board* add-piece-on-board-default (create-random-piece)))
+                (begin
+                  (display "GAME OVER DUDE!")
+                  (stop-loop)))))))
             
 
 (define (piece-on-bottom? piece)
