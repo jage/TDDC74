@@ -61,7 +61,7 @@
       (set! _pieces (append (list piece) _pieces))
       (set-active-piece! piece)
       (not (collide? (send this get-active-piece) (cons 0 0))))
-   
+    
     ;;add block on board (custom properties)
     (define/public (add-piece-on-board-custom piece coord active)
       (send piece set-coord! coord)
@@ -86,16 +86,16 @@
               (let* ((block (car blocks))
                      (new-x (+ (car delta-coord) (send block get-abs-x)))
                      (new-y (+ (cdr delta-coord) (send block get-abs-y))))
-;                DEBUG: Check coordinates
-;                (display "MOVE POSSIBLE?")
-;                (newline)
-;                (display (send block get-coord))
-;                (display new-x)
-;                (display " ")
-;                (display new-y)
-;                (newline)
-;                (newline)
-;                ------------------------
+                ;                DEBUG: Check coordinates
+                ;                (display "MOVE POSSIBLE?")
+                ;                (newline)
+                ;                (display (send block get-coord))
+                ;                (display new-x)
+                ;                (display " ")
+                ;                (display new-y)
+                ;                (newline)
+                ;                (newline)
+                ;                ------------------------
                 (if (and (>= new-x 0) (<= new-x (- (get-width) 1))
                          (>= new-y 0) (<= new-y (- (get-height) 1))
                          (not (collide? piece delta-coord)))
@@ -121,17 +121,21 @@
          (send piece get-blocks))
         collision))
     
-    (define/public (filled-rows)
+    (define/public (get-blocks-on-filled-rows)
       (let* ((i (- (send this get-height) 1))
              (j 0)
-             (rows '()))
+             (rows '())
+             (blocks '()))
         (define (row-loop)
           (for-each
            (lambda (piece)
              (for-each
               (lambda (block)
                 (if (= i (send block get-abs-y))
-                    (set! j (+ 1 j)))) ;;block on the i:th row
+                    (begin
+                      (set! j (+ 1 j))
+                      (set! blocks (append (list block) blocks))
+                      (display (send block get-abs-coord))))) ;;block on the i:th row
               (send piece get-blocks)))
            (send this get-pieces))
           (if (= j (send this get-width)) ;;row i filled
@@ -139,7 +143,7 @@
           (set! i (- i 1)) ;;check next row
           (set! j 0) ;;set column counter to zero
           (if (< i 0) ;;all rows are checked
-              rows
+              blocks
               (row-loop)))
         (row-loop))) ;;start the loop
     ))
@@ -149,8 +153,6 @@
 ;(load "../graphics.scm")
 ;
 ;(define test-board (make-object board% (cons 10 20) 20))
-;
-;(send test-board add-piece-on-board-custom (make-object piece% 'test '((-1 0) (0 0) (1 0)) *red-brush*) (cons 1 0) #t)
 ;
 ;(send test-board add-piece-on-board-custom (make-object piece% 'test '((0 0) (1 0) (2 0) (3 0) (4 0) (5 0) (6 0) (7 0) (8 0) (9 0)) *red-brush*) (cons 0 0) #f)
 ;(send test-board add-piece-on-board-custom (make-object piece% 'test '((0 0) (1 0) (2 0) (3 0) (4 0) (5 0) (6 0) (7 0) (8 0) (9 0)) *red-brush*) (cons 0 7) #f)
