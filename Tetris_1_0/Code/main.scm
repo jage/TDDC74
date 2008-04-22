@@ -9,18 +9,8 @@
 (load "objects/piece.scm")
 (load "objects/board.scm")
 
-
 (define (initiate-graphics)
   (load "graphics_engine.scm"))
-
-
-;(define window-width 200)
-;(define window-height 400)
-;(define game-speed 250) ; ms
-
-;(define piece-size 20)   ; pixels
-;(define board-width 10)  ; pieces
-;(define board-height 20) ; pieces
 
 (define pieces (vector I-piece% J-piece% L-piece% O-piece% S-piece% Z-piece% T-piece%))
 
