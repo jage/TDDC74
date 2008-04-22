@@ -125,7 +125,8 @@
       (let* ((i (- (send this get-height) 1))
              (j 0)
              (rows '())
-             (blocks '()))
+             (blocks '())
+             (blocks-tmp '()))
         (define (row-loop)
           (for-each
            (lambda (piece)
@@ -134,13 +135,14 @@
                 (if (= i (send block get-abs-y))
                     (begin
                       (set! j (+ 1 j))
-                      (set! blocks (append (list block) blocks)))))
+                      (set! blocks-tmp (append (list block) blocks-tmp)))))
               (send piece get-blocks)))
            (send this get-pieces))
           (if (= j (send this get-width)) ;;row i filled
-              (set! rows (append (list i) rows)))
+              (set! blocks (append blocks-tmp blocks)))
           (set! i (- i 1)) ;;check next row
           (set! j 0) ;;set column counter to zero
+          (set! blocks-tmp '()) ;;set tmp block list to null
           (if (< i 0) ;;all rows are checked
               blocks
               (row-loop)))
