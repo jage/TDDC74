@@ -71,17 +71,9 @@
     ;;moves a piece on the board
     (define/public (move-piece piece delta-coord)
       (if (and (not (null? piece)) (move-possible? piece delta-coord))
-;          DEBUG: Check if the piece could be moved
-;          (begin
-;          (display "MOVE PIECE")
-;          (newline)
-;          (display "old coord: ")
-;          (display (send piece get-coord))
-          (send piece set-coord! (cons (+ (car delta-coord) (send piece get-abs-x)) (+ (cdr delta-coord) (send piece get-abs-y))))
-;          (display " new coord: ")
-;          (display (send piece get-coord))
-;          newline))
-;          -------------------------------
+          (begin
+            (send piece set-coord! (cons (+ (car delta-coord) (send piece get-abs-x)) (+ (cdr delta-coord) (send piece get-abs-y))))
+            #t)
           #f))
     
     ;;is move possible?
