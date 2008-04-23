@@ -48,6 +48,7 @@
 
 (define counter 0)
 (define (loop)
+  (if (= counter 0) (initialize))
   (when *should-run*
     (set! counter (+ counter 1))
     (update)

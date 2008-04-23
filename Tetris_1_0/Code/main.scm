@@ -21,7 +21,11 @@
 (define *board* (make-object board% (cons 10 20) 20))
 (initiate-graphics)
 
-(define *current-player* (make-object player% "Johan"))
+(define *current-player* (make-object player% "Test"))
+
+(define (initialize)
+  (send *board* add-piece-on-board-default (create-random-piece)))
+
 ; The new piece code isn't optimal, if one drops down a piece when the 
 ;  counter is at 23, the time to move it sideways will be 1/24 sec ...
 (define (update)
@@ -55,7 +59,6 @@
    (send piece get-blocks))
   bottom)
 
-(send *board* add-piece-on-board-default (create-random-piece))
 
 (define (handle-key-event key)
   (let ((active-piece (send *board* get-active-piece)))
