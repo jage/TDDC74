@@ -34,7 +34,8 @@
         (if (or (piece-on-bottom? (send *board* get-active-piece))
                 (not (send *board* move-piece (send *board* get-active-piece) (cons 0 -1))))
             (begin
-              (send *board* clean-up-filled-rows)
+              (display "Clean up call") (newline) (newline)
+              (send *board* clean-up-board)
               (if (not (send *board* add-piece-on-board-default (create-random-piece)))
                   (begin
                     (display "GAME OVER DUDE!\n")

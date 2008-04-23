@@ -121,34 +121,7 @@
          (send piece get-blocks))
         collision))
     
-;    (define/private (get-blocks-on-filled-rows)
-;      (let* ((i (- (send this get-height) 1))
-;             (j 0)
-;             (rows '())
-;             (blocks '())
-;             (blocks-tmp '()))
-;        (define (row-loop)
-;          (for-each
-;           (lambda (piece)
-;             (for-each
-;              (lambda (block)
-;                (if (= i (send block get-abs-y))
-;                    (begin
-;                      (set! j (+ 1 j))
-;                      (set! blocks-tmp (append (list block) blocks-tmp)))))
-;              (send piece get-blocks)))
-;           (send this get-pieces))
-;          (if (= j (send this get-width)) ;;row i filled
-;              (set! blocks (append blocks-tmp blocks)))
-;          (set! i (- i 1)) ;;check next row
-;          (set! j 0) ;;set column counter to zero
-;          (set! blocks-tmp '()) ;;set tmp block list to null
-;          (if (< i 0) ;;all rows are checked
-;              blocks
-;              (row-loop)))
-;        (row-loop))) ;;start the loop
-    
-    (define/private (get-filled-rows)
+    (define/public (get-filled-rows)
       (let* ((i (- (send this get-height) 1))
              (j 0)
              (rows '()))
@@ -158,19 +131,23 @@
              (for-each
               (lambda (block)
                 (if (= i (send block get-abs-y))
-                      (set! j (+ 1 j))))
+                    (set! j (+ 1 j))))
               (send piece get-blocks)))
            (send this get-pieces))
           (if (= j (send this get-width))
-              (set! rows (append (list i) rows)))
+              (set! rows (append rows (list i))))
           (set! i (- i 1))
           (set! j 0)
           (if (< i 0)
               rows
               (row-loop)))
         (row-loop)))
-    
+             
     (define/private (shift-down-from-row start-row)
+      (display "SHIFT: ")
+      (display start-row)
+      (newline)
+      (newline)
       (for-each
        (lambda (piece)
          (if (<= start-row (send piece get-abs-y))
@@ -178,25 +155,32 @@
        (send this get-pieces)))
     
     (define/private (delete-blocks-on-row row)
+      (display "DELETE-ROW ")
+      (display row)
+      (newline)
+      (newline)
       (for-each
        (lambda (piece)
          (for-each 
           (lambda (block)
-                   (if (= row (send block get-abs-y))
-                       (send piece remove-block block)))
-         (send piece get-blocks)))
+            (if (= row (send block get-abs-y))
+                (send piece remove-block block)))
+          (send piece get-blocks)))
        (send this get-pieces)))
-    
-    (define/public (clean-up-filled-rows)
-      (let* ((filled-rows (get-filled-rows)))
-        (if (not (null? filled-rows)) ;;filled rows exist on board
-            (begin
-              (delete-blocks-on-row (car filled-rows)) ;;delete all blocks on first filled row
-              (shift-down-from-row (car filled-rows)) ;;shift down all rows over the filled row
-              (clean-up-filled-rows))
-            #f)))
-    ))
 
+    (define/public (clean-up-board)
+      (let ((filled-rows (get-filled-rows)))
+        ;;delete all filled rows
+        (for-each
+         (lambda (row)
+           (delete-blocks-on-row row))
+         filled-rows)
+        ;;shift down from top -> bottom
+        (for-each
+         (lambda (row)
+           (shift-down-from-row row))
+         filled-rows)))
+))
 
 ;(load "piece.scm")
 ;(load "block.scm")
@@ -204,5 +188,5 @@
 ;
 ;(define test-board (make-object board% (cons 10 20) 20))
 ;
-;(send test-board add-piece-on-board-custom (make-object piece% 'test '((0 0) (1 0) (2 0) (3 0) (4 0) (5 0) (6 0) (7 0) (8 0) (9 0)) *red-brush*) (cons 0 0) #f)
-;(send test-board add-piece-on-board-custom (make-object piece% 'test '((0 0) (1 0) (2 0) (3 0) (4 0) (5 0) (6 0) (7 0) (8 0) (9 0)) *red-brush*) (cons 0 7) #f)
+;(send test-board add-piece-on-board-custom (make-object piece% 'test '((0 0) (1 0) (2 0) (3 0) (4 0) (5 0) (6 0) (7 0) (8 0) (9 0)) *red-brush*) (cons 0 18) #f)
+;(send test-board add-piece-on-board-custom (make-object piece% 'test '((0 0) (1 0) (2 0) (3 0) (4 0) (5 0) (6 0) (7 0) (8 0) (9 0)) *red-brush*) (cons 0 15) #f)
