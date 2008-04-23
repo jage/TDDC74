@@ -34,13 +34,7 @@
         (if (or (piece-on-bottom? (send *board* get-active-piece))
                 (not (send *board* move-piece (send *board* get-active-piece) (cons 0 -1))))
             (begin
-              (let ((blocks-to-remove (send *board* get-blocks-on-filled-rows)))
-                (if (not (equal? '() blocks-to-remove))
-                    (for-each
-                     (lambda (block) 
-                       (send (send block get-parent-piece) remove-block block)
-                       (send *current-player* increase-score 1))
-                     blocks-to-remove)))
+              (send *board* clean-up-filled-rows)
               (if (not (send *board* add-piece-on-board-default (create-random-piece)))
                   (begin
                     (display "GAME OVER DUDE!\n")
@@ -49,7 +43,6 @@
                     (display "\n")
                   (stop-loop))))))))
   
-
 (define (piece-on-bottom? piece)
   (define bottom #f)
   (for-each
@@ -58,7 +51,6 @@
          (set! bottom #t)))
    (send piece get-blocks))
   bottom)
-
 
 (define (handle-key-event key)
   (let ((active-piece (send *board* get-active-piece)))

@@ -121,37 +121,37 @@
          (send piece get-blocks))
         collision))
     
-    (define/private (get-blocks-on-filled-rows)
-      (let* ((i (- (send this get-height) 1))
-             (j 0)
-             (rows '())
-             (blocks '())
-             (blocks-tmp '()))
-        (define (row-loop)
-          (for-each
-           (lambda (piece)
-             (for-each
-              (lambda (block)
-                (if (= i (send block get-abs-y))
-                    (begin
-                      (set! j (+ 1 j))
-                      (set! blocks-tmp (append (list block) blocks-tmp)))))
-              (send piece get-blocks)))
-           (send this get-pieces))
-          (if (= j (send this get-width)) ;;row i filled
-              (set! blocks (append blocks-tmp blocks)))
-          (set! i (- i 1)) ;;check next row
-          (set! j 0) ;;set column counter to zero
-          (set! blocks-tmp '()) ;;set tmp block list to null
-          (if (< i 0) ;;all rows are checked
-              blocks
-              (row-loop)))
-        (row-loop))) ;;start the loop
+;    (define/private (get-blocks-on-filled-rows)
+;      (let* ((i (- (send this get-height) 1))
+;             (j 0)
+;             (rows '())
+;             (blocks '())
+;             (blocks-tmp '()))
+;        (define (row-loop)
+;          (for-each
+;           (lambda (piece)
+;             (for-each
+;              (lambda (block)
+;                (if (= i (send block get-abs-y))
+;                    (begin
+;                      (set! j (+ 1 j))
+;                      (set! blocks-tmp (append (list block) blocks-tmp)))))
+;              (send piece get-blocks)))
+;           (send this get-pieces))
+;          (if (= j (send this get-width)) ;;row i filled
+;              (set! blocks (append blocks-tmp blocks)))
+;          (set! i (- i 1)) ;;check next row
+;          (set! j 0) ;;set column counter to zero
+;          (set! blocks-tmp '()) ;;set tmp block list to null
+;          (if (< i 0) ;;all rows are checked
+;              blocks
+;              (row-loop)))
+;        (row-loop))) ;;start the loop
     
-    (define/private (get-no-filled-rows)
+    (define/private (get-filled-rows)
       (let* ((i (- (send this get-height) 1))
              (j 0)
-             (rows 0))
+             (rows '()))
         (define (row-loop)
           (for-each
            (lambda (piece)
@@ -162,7 +162,7 @@
               (send piece get-blocks)))
            (send this get-pieces))
           (if (= j (send this get-width))
-              (set! rows (+ 1 rows)))
+              (set! rows (append (list i) rows)))
           (set! i (- i 1))
           (set! j 0)
           (if (< i 0)
@@ -177,13 +177,24 @@
              (send piece set-coord! (cons (send piece get-abs-x) (- (send piece get-abs-y) 1)))))
        (send this get-pieces)))
     
-    (define/public (update)
-      (let ((blocks-to-remove (get-blocks-on-filled-rows)))
-        (if (not (eq? '() blocks-to-remove))
-            (for-each
-             (lambda (block)
-               (send (send block get-parent-piece) remove-block block))
-             blocks-to-remove))))
+    (define/private (delete-blocks-on-row row)
+      (for-each
+       (lambda (piece)
+         (for-each 
+          (lambda (block)
+                   (if (= row (send block get-abs-y))
+                       (send piece remove-block block)))
+         (send piece get-blocks)))
+       (send this get-pieces)))
+    
+    (define/public (clean-up-filled-rows)
+      (let* ((filled-rows (get-filled-rows)))
+        (if (not (null? filled-rows)) ;;filled rows exist on board
+            (begin
+              (delete-blocks-on-row (car filled-rows)) ;;delete all blocks on first filled row
+              (shift-down-from-row (car filled-rows)) ;;shift down all rows over the filled row
+              (clean-up-filled-rows))
+            #f)))
     ))
 
 
