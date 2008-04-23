@@ -99,6 +99,7 @@
                 (if (toggle?) (set! _clockwise (not _clockwise))))))
       #f)
     
+    ; Lite ful kod
     (define/private (revert-rotation?)
       (or (send *board* collide? this (cons 0 0))
           (not (send *board* move-possible? this (cons 0 0)))))
