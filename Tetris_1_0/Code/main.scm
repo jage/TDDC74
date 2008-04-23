@@ -5,6 +5,7 @@
 ;; Load all files
 
 (load "graphics.scm")
+(load "objects/player.scm")
 (load "objects/block.scm")
 (load "objects/piece.scm")
 (load "objects/board.scm")
@@ -20,6 +21,7 @@
 (define *board* (make-object board% (cons 10 20) 20))
 (initiate-graphics)
 
+(define *current-player* (make-object player% "Johan"))
 ; The new piece code isn't optimal, if one drops down a piece when the 
 ;  counter is at 23, the time to move it sideways will be 1/24 sec ...
 (define (update)
@@ -31,11 +33,16 @@
               (let ((blocks-to-remove (send *board* get-blocks-on-filled-rows)))
                 (if (not (equal? '() blocks-to-remove))
                     (for-each
-                     (lambda (block) (send (send block get-parent-piece) remove-block block))
+                     (lambda (block) 
+                       (send (send block get-parent-piece) remove-block block)
+                       (send *current-player* increase-score 1))
                      blocks-to-remove)))
               (if (not (send *board* add-piece-on-board-default (create-random-piece)))
                   (begin
-                    (display "GAME OVER DUDE!")
+                    (display "GAME OVER DUDE!\n")
+                    (display "You scored ")
+                    (display (send *current-player* get-score))
+                    (display "\n")
                   (stop-loop))))))))
   
 
