@@ -121,7 +121,7 @@
          (send piece get-blocks))
         collision))
     
-    (define/public (get-blocks-on-filled-rows)
+    (define/private (get-blocks-on-filled-rows)
       (let* ((i (- (send this get-height) 1))
              (j 0)
              (rows '())
@@ -147,7 +147,45 @@
               blocks
               (row-loop)))
         (row-loop))) ;;start the loop
+    
+    (define/private (get-no-filled-rows)
+      (let* ((i (- (send this get-height) 1))
+             (j 0)
+             (rows 0))
+        (define (row-loop)
+          (for-each
+           (lambda (piece)
+             (for-each
+              (lambda (block)
+                (if (= i (send block get-abs-y))
+                      (set! j (+ 1 j))))
+              (send piece get-blocks)))
+           (send this get-pieces))
+          (if (= j (send this get-width))
+              (set! rows (+ 1 rows)))
+          (set! i (- i 1))
+          (set! j 0)
+          (if (< i 0)
+              rows
+              (row-loop)))
+        (row-loop)))
+    
+    (define/private (shift-down-from-row start-row)
+      (for-each
+       (lambda (piece)
+         (if (<= start-row (send piece get-abs-y))
+             (send piece set-coord! (cons (send piece get-abs-x) (- (send piece get-abs-y) 1)))))
+       (send this get-pieces)))
+    
+    (define/public (update)
+      (let ((blocks-to-remove (get-blocks-on-filled-rows)))
+        (if (not (eq? '() blocks-to-remove))
+            (for-each
+             (lambda (block)
+               (send (send block get-parent-piece) remove-block block))
+             blocks-to-remove))))
     ))
+
 
 ;(load "piece.scm")
 ;(load "block.scm")
