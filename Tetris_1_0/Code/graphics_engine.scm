@@ -27,6 +27,10 @@
    (* (- (send *board* get-height) (cdr block-coord) 1) (send *board* get-pixels-per-unit))
    (send *board* get-pixels-per-unit) (send *board* get-pixels-per-unit) *black-pen* brush))
 
+;;Should draw it on the board...for now its written in the console
+(define (draw-game-over-text)
+  (display (string-append "Congratulations " (send (send *board* get-player) get-name) "!\nYou scored " (number->string (send (send *board* get-player) get-score)) "!!\nTry again and beat it!\n"))) 
+
 ;; --------------------------------------------------------------------
 ;; The animation loop
 ;; --------------------------------------------------------------------

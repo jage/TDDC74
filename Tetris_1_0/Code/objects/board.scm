@@ -144,21 +144,21 @@
         (row-loop)))
              
     (define/private (shift-down-from-row start-row)
-      (display "SHIFT: ")
-      (display start-row)
-      (newline)
-      (newline)
+;      (display "SHIFT: ")
+;      (display start-row)
+;      (newline)
+;      (newline)
       (for-each
        (lambda (piece)
          (if (<= start-row (send piece get-abs-y))
              (send piece set-coord! (cons (send piece get-abs-x) (- (send piece get-abs-y) 1)))))
        (send this get-pieces)))
     
-    (define/private (delete-blocks-on-row row)
-      (display "DELETE-ROW ")
-      (display row)
-      (newline)
-      (newline)
+    (define/private (delete-row row)
+;      (display "DELETE-ROW ")
+;      (display row)
+;      (newline)
+;      (newline)
       (for-each
        (lambda (piece)
          (for-each 
@@ -167,20 +167,23 @@
                 (send piece remove-block block)))
           (send piece get-blocks)))
        (send this get-pieces)))
-
+    
     (define/public (clean-up-board)
       (let ((filled-rows (get-filled-rows)))
         ;;delete all filled rows
         (for-each
          (lambda (row)
-           (delete-blocks-on-row row))
+           (delete-row row))
          filled-rows)
         ;;shift down from top -> bottom
         (for-each
          (lambda (row)
            (shift-down-from-row row))
-         filled-rows)))
-))
+         filled-rows)
+        
+        ;;update player score based on deleted rows
+        (send _player update-score (length filled-rows))))
+    ))
 
 ;(load "piece.scm")
 ;(load "block.scm")

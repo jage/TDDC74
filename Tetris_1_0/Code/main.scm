@@ -21,9 +21,8 @@
 (define *board* (make-object board% (cons 10 20) 20))
 (initiate-graphics)
 
-(define *current-player* (make-object player% "Test"))
-
 (define (initialize)
+  (send *board* set-player! (make-object player% "Test"))
   (send *board* add-piece-on-board-default (create-random-piece)))
 
 ; The new piece code isn't optimal, if one drops down a piece when the 
@@ -34,16 +33,13 @@
         (if (or (piece-on-bottom? (send *board* get-active-piece))
                 (not (send *board* move-piece (send *board* get-active-piece) (cons 0 -1))))
             (begin
-              (display "Clean up call") (newline) (newline)
+              ;(display "Clean up call") (newline) (newline)
               (send *board* clean-up-board)
               (if (not (send *board* add-piece-on-board-default (create-random-piece)))
                   (begin
-                    (display "GAME OVER DUDE!\n")
-                    (display "You scored ")
-                    (display (send *current-player* get-score))
-                    (display "\n")
-                  (stop-loop))))))))
-  
+                    (stop-loop)
+                    (draw-game-over-text))))))))
+
 (define (piece-on-bottom? piece)
   (define bottom #f)
   (for-each

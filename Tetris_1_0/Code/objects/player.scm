@@ -12,5 +12,8 @@
     (define/public (increase-score value)
       (set! _score (+ _score value)))
     
+    (define/public (update-score rows)
+      (set! _score (+ _score (* rows (* 10 rows)))))
+    
     (define/public (get-score)
       _score)))
