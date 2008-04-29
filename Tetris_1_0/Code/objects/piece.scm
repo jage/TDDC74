@@ -61,15 +61,6 @@
     (define/public (get-blocks)
       _blocks)
     
-    ;    ;;get blocks absolute coordinates
-    ;    (define/public (get-blocks-coords)
-    ;      (let ((coords-list '()))
-    ;        (for-each
-    ;         (lambda (block)
-    ;           (set! coords-list (append coords-list (list (get-block-coord block)))))
-    ;         (get-blocks))
-    ;        coords-list))
-    
     ;;get piece brush
     (define/public (get-brush)
       _brush)
@@ -142,12 +133,24 @@
               ((equal? placement (cons -1 -1)) (cons -1 1))
               ((equal? placement (cons 0 2))   (cons 2 0))
               (else placement)))))
-    
+
+    ;;removes block from piece
     (define/public (remove-block block)
       (set! _blocks (remove block _blocks)))
-      
+     
+    ;;check if piece is on bottom
+    (define/public (on-bottom?)
+      (define bottom #f)
+      (for-each
+       (lambda (block)
+         (if (= 0 (send block get-abs-y))
+             (set! bottom #t)))
+       (get-blocks))
+      bottom)
     
     ))
+
+;;Tetris pieces
 
 ; The I-piece is broken ...
 (define I '((-1 0) (0 0) (1 0) (2 0)))   ; Cyan

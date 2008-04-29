@@ -30,29 +30,14 @@
 (define (update)
   (if (or (= counter 24) (= counter 12) (= counter 6))
       (begin
-        (if (or (piece-on-bottom? (send *board* get-active-piece))
+        (if (or (send (send *board* get-active-piece) on-bottom?)
                 (not (send *board* move-piece (send *board* get-active-piece) (cons 0 -1))))
             (begin
-              ;(display "Clean up call") (newline) (newline)
               (send *board* clean-up-board)
               (if (not (send *board* add-piece-on-board-default (create-random-piece)))
                   (begin
                     (stop-loop)
                     (draw-game-over-text))))))))
-
-(define (piece-on-bottom? piece)
-  (define bottom #f)
-  (for-each
-   (lambda (block)
-     (if (= 0 (send block get-abs-y))
-         (set! bottom #t)))
-   (send piece get-blocks))
-  bottom)
-
-; Should be in board
-(define (drop-down-piece piece)
-  (if (send *board* move-piece piece (cons 0 -1))
-      (begin (set! counter 1) (drop-down-piece piece))))
 
 (define (handle-key-event key)
   (let ((active-piece (send *board* get-active-piece)))
@@ -61,7 +46,7 @@
        (hide-gui *gui*)
        (stop-loop))
       ((eq? key #\space)
-       (drop-down-piece active-piece))
+       (send *board* drop-down-piece active-piece))
       ((eq? key 'up) 
        (send active-piece rotate))
       ((eq? key 'down) 

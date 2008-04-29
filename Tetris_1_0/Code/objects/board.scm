@@ -183,6 +183,12 @@
         
         ;;update player score based on deleted rows
         (send _player update-score (length filled-rows))))
+
+    ;;places the active piece on bottom
+    (define/public (drop-down-piece piece)
+      (if (move-piece piece (cons 0 -1))
+          (drop-down-piece piece)))
+    
     ))
 
 ;(load "piece.scm")
