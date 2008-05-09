@@ -28,7 +28,7 @@
 ; The new piece code isn't optimal, if one drops down a piece when the 
 ;  counter is at 23, the time to move it sideways will be 1/24 sec ...
 (define (update)
-  (if (or (= counter 24) (= counter 12) (= counter 6))
+  (if (= (remainder *counter* 6) 0)
       (begin
         (if (or (send (send *board* get-active-piece) on-bottom?)
                 (not (send *board* move-piece (send *board* get-active-piece) (cons 0 -1))))
@@ -42,11 +42,14 @@
 (define (handle-key-event key)
   (let ((active-piece (send *board* get-active-piece)))
     (cond
+      ((eq? key #\p)
+       (if *should-run* (stop-loop) (start-loop)))
       ((eq? key #\q)
        (hide-gui *gui*)
        (stop-loop))
       ((eq? key #\space)
-       (send *board* drop-down-piece active-piece))
+       (send *board* drop-down-piece active-piece)
+       (set! *counter* 1))
       ((eq? key 'up) 
        (send active-piece rotate))
       ((eq? key 'down) 
@@ -57,3 +60,9 @@
        (send *board* move-piece active-piece (cons 1 0))))))
 
 (start-loop)
+
+(define (print-coords)
+  (for-each 
+   (lambda (piece) 
+     (display (send piece get-coord)))
+   (send *board* get-pieces)))
