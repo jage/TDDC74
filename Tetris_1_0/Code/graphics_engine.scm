@@ -25,7 +25,16 @@
   (draw-rectangle 
    (* (car block-coord) (send *board* get-pixels-per-unit)) 
    (* (- (send *board* get-height) (cdr block-coord) 1) (send *board* get-pixels-per-unit))
-   (send *board* get-pixels-per-unit) (send *board* get-pixels-per-unit) *black-pen* brush))
+   (send *board* get-pixels-per-unit) (send *board* get-pixels-per-unit) *black-pen* brush)
+  (if *debug*
+      (draw-text
+       (string-append
+        (number->string (car block-coord))
+        "x"
+        (number->string (cdr block-coord)))
+       (* (car block-coord) (send *board* get-pixels-per-unit)) 
+       (* (- (send *board* get-height) (cdr block-coord) 1) (send *board* get-pixels-per-unit))
+       *black-pen* brush)))
 
 ;;Should draw it on the board...for now its written in the console
 (define (draw-game-over-text)

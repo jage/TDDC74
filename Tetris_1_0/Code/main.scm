@@ -2,6 +2,8 @@
 
 ;;MAIN
 
+(define *debug* #f)
+
 ;; Load all files
 
 (load "graphics.scm")
