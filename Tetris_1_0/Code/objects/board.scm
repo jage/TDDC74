@@ -69,6 +69,10 @@
       (if active
           (set-active-piece! piece)))
     
+    ;;delete the piece from board
+    (define/private (delete-piece! piece)
+      (remove piece _pieces))
+          
     ;;moves a piece on the board
     (define/public (move-piece piece delta-coord)
       (if (and (not (null? piece)) (move-possible? piece delta-coord))
@@ -142,16 +146,25 @@
               rows
               (row-loop)))
         (row-loop)))
-             
+
     (define/private (shift-down-from-row start-row)
-;      (display "SHIFT: ")
-;      (display start-row)
-;      (newline)
-;      (newline)
+      ;      (display "SHIFT: ")
+      ;      (display start-row)
+      ;      (newline)
+      ;      (newline)
       (for-each
        (lambda (piece)
-         (if (<= start-row (send piece get-abs-y))
-             (send piece set-coord! (cons (send piece get-abs-x) (- (send piece get-abs-y) 1)))))
+         (let ((piece-shifted #f))
+           (for-each
+            (lambda (block)
+              (if (not piece-shifted)
+                  (if (>= (send block get-abs-y) start-row)
+                      (begin
+                        (send (send block get-parent-piece) set-coord!
+                              (cons (send (send block get-parent-piece) get-abs-x)
+                                    (- (send (send block get-parent-piece) get-abs-y) 1)))
+                        (set! piece-shifted #t)))))
+            (send piece get-blocks))))
        (send this get-pieces)))
     
     (define/private (delete-row row)
@@ -181,8 +194,29 @@
            (shift-down-from-row row))
          filled-rows)
         
+        (delete-garbage-pieces)
+        
         ;;update player score based on deleted rows
         (send _player update-score (length filled-rows))))
+    
+    ;;delete 'null' pieces and pieces with y<0 from board
+    (define/private (delete-garbage-pieces)
+      (for-each
+       (lambda (piece)
+         (if (or (null? (send piece get-blocks)) ;;null piece
+                 (piece-underneath? piece)) ;;underneath board bottom
+             (delete-piece! piece)))
+       _pieces))
+    
+    ;;checks if piece is "underneath" the board bottom
+    (define/private (piece-underneath? piece)
+      (let ((underneath #t))
+        (for-each
+         (lambda (block)
+           (if (>= (send block get-abs-y) 0)
+               (set! underneath #f)))
+         (send piece get-blocks))
+        underneath))
 
     ;;places the active piece on bottom
     (define/public (drop-down-piece piece)
