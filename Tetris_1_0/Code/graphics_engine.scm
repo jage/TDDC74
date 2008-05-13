@@ -32,7 +32,7 @@
    (lambda (block)
      (draw-block 
       (cons (+ (send *board* get-width) (send block get-rel-x) 2)
-            (- (send *board* get-height) (send block get-rel-y) 6))
+            (- (send *board* get-height) (- (send block get-rel-y)) 6))
       (send *next-piece* get-brush)))
    (send *next-piece* get-blocks)))
 
