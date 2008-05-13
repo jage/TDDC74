@@ -1,18 +1,14 @@
 ;;TETRIS
-
-; XXX TMP
-;(load "block.scm")
-;(load "../graphics.scm")
+;;piece.scm
 
 
-;;Piece object
+;;PIECE CLASS
 
-; Parent class for the pieces ...
 (define piece%
   (class object%
     (super-new)
     
-    ;; Fields
+    ;;### FIELDS ###
     (init type block-list brush)
     
     (define _type type)
@@ -22,12 +18,15 @@
     (define _blocks '())
     (define _clockwise #t)
     
-    ;;constructor
-    (define (constructor)
+    ;;### CONSTRUCTOR ###
+    
+    (define/private (constructor)
       (create-piece _block-list))
     
-    ;; creates piece from block list 
-    (define (create-piece list)
+    ;;creates piece from block list
+    ;;called by constructor proc
+    ;; <- list of coords
+    (define/private (create-piece list)
       (if (not (null? list))
           (begin
             (let ((pair (car list)))
@@ -37,78 +36,85 @@
     ;;calls the constructor
     (constructor)
     
-    ;;get piece absolute coordinates
-    (define/public (get-coord)
-      _coord)
+    ;;### FIELD ACCESSORS ###
     
-    ;;get piece absolute x-coord
-    (define/public (get-abs-x)
-      (car (get-coord)))
-    
-    ;;get piece absolute y-coord
-    (define/public (get-abs-y)
-      (cdr (get-coord)))
-    
-    ;;set absolute coordinates
+    ;;SET abs. coordinates
+    ;; <- coord [cons]
     (define/public (set-coord! coord)
       (set! _coord coord))
     
-    ;;add block to piece
-    (define/public (add-block! rel-coord)
-      (set! _blocks (append _blocks (list (make-object block% rel-coord this)))))
+    ;;GET abs. coordinates
+    ;; -> cons
+    (define/public (get-coord)
+      _coord)
     
-    ;;get blocks
+    ;;GET abs. x-coord
+    ;; -> num
+    (define/public (get-abs-x)
+      (car (get-coord)))
+    
+    ;;GET abs. y-coord
+    ;; -> num
+    (define/public (get-abs-y)
+      (cdr (get-coord)))
+    
+    ;;GET blocks
+    ;; -> list of blocks
     (define/public (get-blocks)
       _blocks)
     
-    ;;get piece brush
+    ;;GET brush
+    ;; -> gui brush
     (define/public (get-brush)
       _brush)
     
-    ;;get piece type
+    ;;GET type of piece
+    ;; -> symbol
     (define/public (get-type)
       _type)
     
-    ;; get if piece is rotatable
+    ;;GET rotateable (override in child classes)
+    ;; -> bool
     (define/public (rotate?)
       #f)
     
+    ;;GET toggable (override in child classes)
+    ;; -> bool
     (define/public (toggle?)
       #f)
     
-    ; Watch out for loops of DEATH!
+    ;;### METHODS ###
+    
+    ;;VOID add block
+    ;; <- rel-coord [cons]
+    (define/public (add-block! rel-coord)
+      (set! _blocks (append _blocks (list (make-object block% rel-coord this)))))
+    
+    ;;VOID revert rotation
+    ;;comment: use with care!
     (define/public (revert-rotation!)
       (rotate-worker (not _clockwise)))
     
-    ;;rotate piece
-    (define/public (rotate)
-      (if (rotate?)
-          (begin
-            (rotate-worker _clockwise)
-            (if (revert-rotation?) 
-                (revert-rotation!)
-                (if (toggle?) (set! _clockwise (not _clockwise))))))
-      #f)
-    
-    ; Lite ful kod
-    (define/private (revert-rotation?)
-      (or (send *board* collide? this (cons 0 0))
-          (not (send *board* move-possible? this (cons 0 0)))))
-    
+    ;;VOID rotation worker
+    ;; <- clockwise [bool]
     (define/private (rotate-worker clockwise)
       (for-each
        (lambda (block)
-         (send block set-rel-coord! (rotate-coord block clockwise)))
+         (send block set-rel-coord! (rotate-block-coord block clockwise)))
        _blocks))
     
-    ; Counter clockwise rotation
-    ; Keep the pieces inside this shape ...
-    ; O = Origo (0 . 0)
-    ;  X X X
-    ;  X O X X
-    ;  X X X
-    ;    X
-    (define/private (rotate-coord block clockwise)
+    ;;VOID rotate block coords
+    ;; <- block [block%]
+    ;; <- clockwise [bool]
+
+    ;; Counter clockwise rotation
+    ;; Keep the pieces inside this shape ...
+    ;; O = Origo (0 . 0)
+    ;;  X X X
+    ;;  X O X X
+    ;;  X X X
+    ;;    X
+    (define/private (rotate-block-coord block clockwise)
       (let ((placement (send block get-rel-coord)))
         (if clockwise
             (cond
@@ -133,26 +139,35 @@
               ((equal? placement (cons -1 -1)) (cons -1 1))
               ((equal? placement (cons 0 2))   (cons 2 0))
               (else placement)))))
-
-    ;;removes block from piece
-    (define/public (remove-block block)
-      (set! _blocks (remove block _blocks)))
-     
-    ;;check if piece is on bottom
-    (define/public (on-bottom?)
-      (define bottom #f)
-      (for-each
-       (lambda (block)
-         (if (= 0 (send block get-abs-y))
-             (set! bottom #t)))
-       (get-blocks))
-      bottom)
     
+    ;;VOID delete block from piece
+    ;; <- block [block%]
+    (define/public (delete-block block)
+      (set! _blocks (remove block _blocks)))
+    
+    ;;### FUNCTIONS ###
+    
+    ;;FUNC rotate piece
+    ;; -> bool
+    (define/public (rotate)
+      (if (rotate?)
+          (begin
+            (rotate-worker _clockwise)
+            (if (revert-rotation?) 
+                (revert-rotation!)
+                (if (toggle?) (set! _clockwise (not _clockwise))))))
+      #f)
+    
+    ;;FUNC revert rotation possible?
+    ;; -> bool
+    (define/private (revert-rotation?)
+      (or (send *board* collide? this (cons 0 0))
+          (not (send *board* move-possible? this (cons 0 0)))))
     ))
 
-;;Tetris pieces
+;;TETRIS PIECES
 
-; The I-piece is broken ...
+;;The I-piece is broken ...
 (define I '((-1 0) (0 0) (1 0) (2 0)))   ; Cyan
 (define J '((-1 -1) (0 -1) (0 0) (0 1))) ; Blue
 (define L '((1 -1) (0 -1) (0 0) (0 1)))  ; Orange
@@ -161,6 +176,7 @@
 (define Z '((-1 1) (0 1) (0 0) (1 0)))   ; Red
 (define T '((-1 0) (0 0) (1 0) (0 1)))   ; Magenta
 
+;;I
 (define I-piece%
   (class piece%
     (override toggle? rotate?)
@@ -168,6 +184,7 @@
     (define (rotate?) #t)
     (super-new (type 'I) (block-list I) (brush *cyan-brush*))))
 
+;;J
 (define J-piece%
   (class piece%
     (override toggle? rotate?)
@@ -175,6 +192,7 @@
     (define (rotate?) #t)
     (super-new (type 'J) (block-list J) (brush *blue-brush*))))
 
+;;L
 (define L-piece%
   (class piece%
     (override toggle? rotate?)
@@ -182,6 +200,7 @@
     (define (rotate?) #t)
     (super-new (type 'L) (block-list L) (brush *orange-brush*))))
 
+;;O
 (define O-piece%
   (class piece%
     (override toggle? rotate?)
@@ -189,6 +208,7 @@
     (define (rotate?) #f)
     (super-new (type 'O) (block-list O) (brush *yellow-brush*))))
 
+;;S
 (define S-piece%
   (class piece%
     (override toggle? rotate?)
@@ -196,6 +216,7 @@
     (define (rotate?) #t)
     (super-new (type 'S) (block-list S) (brush *green-brush*))))
 
+;;Z
 (define Z-piece%
   (class piece%
     (override toggle? rotate?)
@@ -203,6 +224,7 @@
     (define (rotate?) #t)
     (super-new (type 'Z) (block-list Z) (brush *red-brush*))))
 
+;;T
 (define T-piece%
   (class piece%
     (override toggle? rotate?)

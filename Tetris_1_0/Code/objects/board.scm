@@ -1,79 +1,100 @@
 ;;TETRIS
+;;board.scm
 
-;;Board object
+
+;;BOARD CLASS
 
 (define board%
   (class object%
     (super-new)
     
+    ;;### FIELDS ###
     (init-field board-size-units pixels-per-unit)
     
-    ;;variables
-    (define _pieces '())
-    (define _active-piece  #f)
-    (define _player #f)
-    (define _size board-size-units)
-    (define _pixels-per-unit pixels-per-unit)
+    (define _pieces '()) ;;[list]
+    (define _active-piece  #f) ;;[bool]
+    (define _player #f) ;;[player%]
+    (define _size board-size-units) ;;[cons]
+    (define _pixels-per-unit pixels-per-unit) ;;[num]
     
-    ;;get all pieces on board
+    ;;### FIELD ACCESSORS
+    
+    ;;GET pieces
+    ;; -> [list piece%]
     (define/public (get-pieces)
       _pieces)
     
-    ;;sets the active piece on the board
+    ;;SET active piece
+    ;; <- [piece%]
     (define/public (set-active-piece! piece)
       (set! _active-piece piece))
     
-    ;;get the active piece on the board
+    ;;GET active piece
+    ;; <- [piece%]
     (define/public (get-active-piece)
       _active-piece)
     
-    ;;sets player
+    ;;SET player
+    ;; <- [player%]
     (define/public (set-player! player)
       (set! _player player))
     
-    ;;get player
+    ;;GET player
+    ;; -> [player%]
     (define/public (get-player)
       _player)
     
-    ;;get board size
+    ;;GET board size
+    ;; -> [cons]
     (define/public (get-size)
       _size)
     
-    ;;get board width
+    ;;GET board width
+    ;; -> [num]
     (define/public (get-width)
       (car _size))
     
-    ;;get board height
+    ;;GET board height
+    ;; -> [num]
     (define/public (get-height)
       (cdr _size))
     
-    ;;get pixels per unit
+    ;;GET pixels per unit
+    ;; -> [num]
     (define/public (get-pixels-per-unit)
       _pixels-per-unit)
     
-    ;;get units->pixels
-    (define/public (units->pixels units)
-      (* (get-pixels-per-unit) units))
+    ;;### METHODS ##
     
-    ;;add block on board (default properties)
+    ;;VOID add piece on board (default pos)
+    ;; <- piece [piece%]
+    ;; -> [bool]
     (define/public (add-piece-on-board-default piece)
       (send piece set-coord! (cons (/ (get-width) 2) (- (get-height) 1)))
       (set! _pieces (append (list piece) _pieces))
       (set-active-piece! piece)
       (not (collide? (send this get-active-piece) (cons 0 0))))
     
-    ;;add block on board (custom properties)
+    ;;VOID add piece on board (custom pos)
+    ;; <- piece [piece%]
+    ;; <- coord [cons]
+    ;; <- active [bool]
+    ;; -> [bool]
     (define/public (add-piece-on-board-custom piece coord active)
       (send piece set-coord! coord)
       (set! _pieces (append (list piece) _pieces))
       (if active
           (set-active-piece! piece)))
-    
-    ;;delete the piece from board
+
+    ;;VOID delete piece from board
+    ;; <- piece [piece%]
+    ;; -> [bool]
     (define/private (delete-piece! piece)
       (remove piece _pieces))
-          
-    ;;moves a piece on the board
+    
+    ;;VOID move piece
+    ;; <- piece [piece%]
+    ;; <- delta-coord [cons]
     (define/public (move-piece piece delta-coord)
       (if (and (not (null? piece)) (move-possible? piece delta-coord))
           (begin
@@ -81,7 +102,98 @@
             #t)
           #f))
     
-    ;;is move possible?
+    ;;VOID shift down rows
+    ;; <- start-row [num]
+    (define/private (shift-down-from-row start-row)
+      ;-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
+      (if *debug*
+            (display "call to shift-down-from-row in board: ")
+            (display start-row)
+            (newline)
+            (newline))
+      ;-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
+      (for-each
+       (lambda (piece)
+         (let ((piece-shifted #f))
+           (for-each
+            (lambda (block)
+              (if (not piece-shifted)
+                  (if (>= (send block get-abs-y) start-row)
+                      (begin
+                        (send (send block get-parent-piece) set-coord!
+                              (cons (send (send block get-parent-piece) get-abs-x)
+                                    (- (send (send block get-parent-piece) get-abs-y) 1)))
+                        (set! piece-shifted #t)))))
+            (send piece get-blocks))))
+       (send this get-pieces)))
+    
+    ;;VOID delete all blocks on row
+    ;; <- row [num]
+    (define/private (delete-row row)
+      ;-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
+      (if *debug*
+          (display "call to delete-row in board: ")
+          (display row)
+          (newline)
+          (newline))
+      ;-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
+      (for-each
+       (lambda (piece)
+         (for-each 
+          (lambda (block)
+            (if (= row (send block get-abs-y))
+                (send piece remove-block block)))
+          (send piece get-blocks)))
+       (send this get-pieces)))
+    
+    ;;VOID clean up filled rows
+    (define/public (clean-up-board)
+      (let ((filled-rows (get-filled-rows)))
+        ;;delete all filled rows
+        (for-each
+         (lambda (row)
+           (delete-row row))
+         filled-rows)
+        ;;shift down from top -> bottom
+        (for-each
+         (lambda (row)
+           (shift-down-from-row row))
+         filled-rows)
+        
+        ;;deletes all 'garbage' pieces
+        (delete-garbage-pieces) 
+        
+        ;;update player score based on deleted rows
+        (send _player update-score (length filled-rows))))
+    
+    ;;VOID delete 'garbage'
+    (define/private (delete-garbage-pieces)
+      (for-each
+       (lambda (piece)
+         (if (or (null? (send piece get-blocks)) ;;null piece
+                 (piece-below-bottom? piece)) ;;below the board bottom
+             (delete-piece! piece)))
+       _pieces))
+    
+    ;;VOID drops the piece on the bottom
+    ;; <- piece [piece%]
+    (define/public (drop-down-piece piece)
+      (if (move-piece piece (cons 0 -1))
+          (drop-down-piece piece)))
+    
+    
+    ;;### FUNCTIONS
+    
+    ;;FUNC converts units -> pixels
+    ;; <- units [num]
+    ;; -> [num]
+    (define/public (units->pixels units)
+      (* (get-pixels-per-unit) units))
+    
+    ;;FUNC move piece possible
+    ;; <- piece [piece%]
+    ;; <- delta-coord [cons]
+    ;; -> [bool]
     (define/public (move-possible? piece delta-coord)
       (define (worker blocks)
         (if (null? blocks)
@@ -90,16 +202,17 @@
               (let* ((block (car blocks))
                      (new-x (+ (car delta-coord) (send block get-abs-x)))
                      (new-y (+ (cdr delta-coord) (send block get-abs-y))))
-                ;                DEBUG: Check coordinates
-                ;                (display "MOVE POSSIBLE?")
-                ;                (newline)
-                ;                (display (send block get-coord))
-                ;                (display new-x)
-                ;                (display " ")
-                ;                (display new-y)
-                ;                (newline)
-                ;                (newline)
-                ;                ------------------------
+                ;-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
+                (if *debug*
+                    (display "call to move-possible in board")
+                    (newline)
+                    (display (send block get-coord))
+                    (display new-x)
+                    (display " ")
+                    (display new-y)
+                    (newline)
+                    (newline))
+                ;-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
                 (if (and (>= new-x 0) (<= new-x (- (get-width) 1))
                          (>= new-y 0) (<= new-y (- (get-height) 1))
                          (not (collide? piece delta-coord)))
@@ -107,7 +220,10 @@
                     #f)))))
       (worker (send piece get-blocks)))
     
-    ;;checks if piece collides with other pieces on the board
+    ;;FUNC collision?
+    ;; <- piece [piece%]
+    ;; <- delta-coord [cons]
+    ;; -> [bool]
     (define/public (collide? piece delta-coord)
       (let ((collision #f))
         (for-each
@@ -125,6 +241,8 @@
          (send piece get-blocks))
         collision))
     
+    ;;FUNC filled rows on board
+    ;; -> [list num]
     (define/public (get-filled-rows)
       (let* ((i (- (send this get-height) 1))
              (j 0)
@@ -146,84 +264,33 @@
               rows
               (row-loop)))
         (row-loop)))
-
-    (define/private (shift-down-from-row start-row)
-      ;      (display "SHIFT: ")
-      ;      (display start-row)
-      ;      (newline)
-      ;      (newline)
-      (for-each
-       (lambda (piece)
-         (let ((piece-shifted #f))
-           (for-each
-            (lambda (block)
-              (if (not piece-shifted)
-                  (if (>= (send block get-abs-y) start-row)
-                      (begin
-                        (send (send block get-parent-piece) set-coord!
-                              (cons (send (send block get-parent-piece) get-abs-x)
-                                    (- (send (send block get-parent-piece) get-abs-y) 1)))
-                        (set! piece-shifted #t)))))
-            (send piece get-blocks))))
-       (send this get-pieces)))
     
-    (define/private (delete-row row)
-;      (display "DELETE-ROW ")
-;      (display row)
-;      (newline)
-;      (newline)
-      (for-each
-       (lambda (piece)
-         (for-each 
-          (lambda (block)
-            (if (= row (send block get-abs-y))
-                (send piece remove-block block)))
-          (send piece get-blocks)))
-       (send this get-pieces)))
-    
-    (define/public (clean-up-board)
-      (let ((filled-rows (get-filled-rows)))
-        ;;delete all filled rows
-        (for-each
-         (lambda (row)
-           (delete-row row))
-         filled-rows)
-        ;;shift down from top -> bottom
-        (for-each
-         (lambda (row)
-           (shift-down-from-row row))
-         filled-rows)
-        
-        (delete-garbage-pieces)
-        
-        ;;update player score based on deleted rows
-        (send _player update-score (length filled-rows))))
-    
-    ;;delete 'null' pieces and pieces with y<0 from board
-    (define/private (delete-garbage-pieces)
-      (for-each
-       (lambda (piece)
-         (if (or (null? (send piece get-blocks)) ;;null piece
-                 (piece-underneath? piece)) ;;underneath board bottom
-             (delete-piece! piece)))
-       _pieces))
-    
-    ;;checks if piece is "underneath" the board bottom
-    (define/private (piece-underneath? piece)
-      (let ((underneath #t))
+    ;;FUNC is piece below the bottom?
+    ;; <- piece [piece%]
+    ;; -> [bool]
+    (define/private (piece-below-bottom? piece)
+      (let ((below #t))
         (for-each
          (lambda (block)
            (if (>= (send block get-abs-y) 0)
-               (set! underneath #f)))
+               (set! below #f)))
          (send piece get-blocks))
-        underneath))
-
-    ;;places the active piece on bottom
-    (define/public (drop-down-piece piece)
-      (if (move-piece piece (cons 0 -1))
-          (drop-down-piece piece)))
+        below))
     
+    ;;FUNC is piece on bottom?
+    ;; <- piece [piece%]
+    ;; -> [bool]
+    (define/public (on-bottom? piece)
+      (define bottom #f)
+      (for-each
+       (lambda (block)
+         (if (= 0 (send block get-abs-y))
+             (set! bottom #t)))
+       (send piece get-blocks))
+      bottom)
     ))
+    
+;; ### DEBUG CODE ###
 
 ;(load "piece.scm")
 ;(load "block.scm")

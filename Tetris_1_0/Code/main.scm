@@ -32,7 +32,7 @@
 (define (update)
   (if (= (remainder *counter* 6) 0)
       (begin
-        (if (or (send (send *board* get-active-piece) on-bottom?)
+        (if (or (send *board* on-bottom? (send *board* get-active-piece))
                 (not (send *board* move-piece (send *board* get-active-piece) (cons 0 -1))))
             (begin
               (send *board* clean-up-board)
