@@ -85,7 +85,7 @@
       (set! _pieces (append (list piece) _pieces))
       (if active
           (set-active-piece! piece)))
-
+    
     ;;VOID delete piece from board
     ;; <- piece [piece%]
     ;; -> [bool]
@@ -107,10 +107,11 @@
     (define/private (shift-down-from-row start-row)
       ;-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
       (if *debug*
+          (begin
             (display "call to shift-down-from-row in board: ")
             (display start-row)
             (newline)
-            (newline))
+            (newline)))
       ;-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
       (for-each
        (lambda (piece)
@@ -132,10 +133,11 @@
     (define/private (delete-row row)
       ;-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
       (if *debug*
-          (display "call to delete-row in board: ")
-          (display row)
-          (newline)
-          (newline))
+          (begin
+            (display "call to delete-row in board: ")
+            (display row)
+            (newline)
+            (newline)))
       ;-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
       (for-each
        (lambda (piece)
@@ -204,14 +206,15 @@
                      (new-y (+ (cdr delta-coord) (send block get-abs-y))))
                 ;-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
                 (if *debug*
-                    (display "call to move-possible in board")
-                    (newline)
-                    (display (send block get-coord))
-                    (display new-x)
-                    (display " ")
-                    (display new-y)
-                    (newline)
-                    (newline))
+                    (begin
+                      (display "call to move-possible in board")
+                      (newline)
+                      (display (send block get-coord))
+                      (display new-x)
+                      (display " ")
+                      (display new-y)
+                      (newline)
+                      (newline)))
                 ;-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
                 (if (and (>= new-x 0) (<= new-x (- (get-width) 1))
                          (>= new-y 0) (<= new-y (- (get-height) 1))
@@ -289,7 +292,7 @@
        (send piece get-blocks))
       bottom)
     ))
-    
+
 ;; ### DEBUG CODE ###
 
 ;(load "piece.scm")

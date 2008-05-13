@@ -44,42 +44,42 @@
       (set! _coord coord))
     
     ;;GET abs. coordinates
-    ;; -> cons
+    ;; -> [cons]
     (define/public (get-coord)
       _coord)
     
     ;;GET abs. x-coord
-    ;; -> num
+    ;; -> [num]
     (define/public (get-abs-x)
       (car (get-coord)))
     
     ;;GET abs. y-coord
-    ;; -> num
+    ;; -> [num]
     (define/public (get-abs-y)
       (cdr (get-coord)))
     
     ;;GET blocks
-    ;; -> list of blocks
+    ;; -> [list block%]
     (define/public (get-blocks)
       _blocks)
     
     ;;GET brush
-    ;; -> gui brush
+    ;; -> [brush]
     (define/public (get-brush)
       _brush)
     
     ;;GET type of piece
-    ;; -> symbol
+    ;; -> [symb]
     (define/public (get-type)
       _type)
     
     ;;GET rotateable (override in child classes)
-    ;; -> bool
+    ;; -> [bool]
     (define/public (rotate?)
       #f)
     
     ;;GET toggable (override in child classes)
-    ;; -> bool
+    ;; -> [bool]
     (define/public (toggle?)
       #f)
     
@@ -91,6 +91,7 @@
       (set! _blocks (append _blocks (list (make-object block% rel-coord this)))))
     
     ;;VOID revert rotation
+    ;; -> [bool]
     ;;comment: use with care!
     (define/public (revert-rotation!)
       (rotate-worker (not _clockwise)))
@@ -148,7 +149,7 @@
     ;;### FUNCTIONS ###
     
     ;;FUNC rotate piece
-    ;; -> bool
+    ;; -> [bool]
     (define/public (rotate)
       (if (rotate?)
           (begin
@@ -159,7 +160,7 @@
       #f)
     
     ;;FUNC revert rotation possible?
-    ;; -> bool
+    ;; -> [bool]
     (define/private (revert-rotation?)
       (or (send *board* collide? this (cons 0 0))
           (not (send *board* move-possible? this (cons 0 0)))))
