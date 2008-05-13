@@ -142,7 +142,7 @@
          (for-each 
           (lambda (block)
             (if (= row (send block get-abs-y))
-                (send piece remove-block block)))
+                (send piece delete-block block)))
           (send piece get-blocks)))
        (send this get-pieces)))
     
