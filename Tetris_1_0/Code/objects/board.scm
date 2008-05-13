@@ -90,7 +90,7 @@
     ;; <- piece [piece%]
     ;; -> [bool]
     (define/private (delete-piece! piece)
-      (remove piece _pieces))
+      (set! _pieces (remove piece _pieces)))
     
     ;;VOID move piece
     ;; <- piece [piece%]
@@ -272,11 +272,11 @@
     ;; <- piece [piece%]
     ;; -> [bool]
     (define/private (piece-below-bottom? piece)
-      (let ((below #t))
+      (let ((below #f))
         (for-each
          (lambda (block)
-           (if (>= (send block get-abs-y) 0)
-               (set! below #f)))
+           (if (< (send block get-abs-y) 0)
+               (set! below #t)))
          (send piece get-blocks))
         below))
     
