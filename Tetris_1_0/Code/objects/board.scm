@@ -108,9 +108,11 @@
       ;-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
       (if *debug*
           (begin
+            (display "--------"
             (display "call to shift-down-from-row in board: ")
-            (display start-row)
             (newline)
+            (display start-row)
+            (display "--------"
             (newline)))
       ;-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
       (for-each
@@ -134,9 +136,11 @@
       ;-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
       (if *debug*
           (begin
+            (display "--------"
             (display "call to delete-row in board: ")
-            (display row)
             (newline)
+            (display row)
+            (display "--------"
             (newline)))
       ;-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
       (for-each
@@ -207,13 +211,17 @@
                 ;-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
                 (if *debug*
                     (begin
+                      (display "---------"
                       (display "call to move-possible in board")
                       (newline)
-                      (display (send block get-coord))
+                      (display "old coords: ")
+                      (display (send block get-abs-coord))
+                      (newline)
+                      (display "new coords: ")
                       (display new-x)
                       (display " ")
                       (display new-y)
-                      (newline)
+                      (display "----------"
                       (newline)))
                 ;-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
                 (if (and (>= new-x 0) (<= new-x (- (get-width) 1))
