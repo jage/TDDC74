@@ -108,12 +108,10 @@
       ;-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
       (if *debug*
           (begin
-            (display "--------")
-            (display "call to shift-down-from-row in board: ")
-            (newline)
+            (display "BOARD -> SHIFT-DOWN-FROM-ROW\n")
+            (display "start-row: ")
             (display start-row)
-            (display "--------")
-            (newline)))
+            (newline)(newline)))
       ;-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
       (for-each
        (lambda (piece)
@@ -136,12 +134,10 @@
       ;-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
       (if *debug*
           (begin
-            (display "--------")
-            (display "call to delete-row in board: ")
-            (newline)
+            (display "BOARD -> DELETE-ROW\n")
+            (display "row: ")
             (display row)
-            (display "--------")
-            (newline)))
+            (newline)(newline)))
       ;-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
       (for-each
        (lambda (piece)
@@ -155,6 +151,14 @@
     ;;VOID clean up filled rows
     (define/public (clean-up-board)
       (let ((filled-rows (get-filled-rows)))
+        ;-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
+        (if *debug*
+            (begin
+              (display "BOARD -> CLEAN-UP-BOARD\n")
+              (display "filled-rows: ")
+              (display filled-rows)
+              (newline)(newline)))
+        ;-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
         ;;delete all filled rows
         (for-each
          (lambda (row)
@@ -208,27 +212,27 @@
               (let* ((block (car blocks))
                      (new-x (+ (car delta-coord) (send block get-abs-x)))
                      (new-y (+ (cdr delta-coord) (send block get-abs-y))))
-                ;-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
-                (if *debug*
-                    (begin
-                      (display "---------")
-                      (display "call to move-possible in board")
-                      (newline)
-                      (display "old coords: ")
-                      (display (send block get-abs-coord))
-                      (newline)
-                      (display "new coords: ")
-                      (display new-x)
-                      (display " ")
-                      (display new-y)
-                      (display "----------")
-                      (newline)))
-                ;-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
                 (if (and (>= new-x 0) (<= new-x (- (get-width) 1))
                          (>= new-y 0) (<= new-y (- (get-height) 1))
                          (not (collide? piece delta-coord)))
                     (worker (cdr blocks))
                     #f)))))
+      ;-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
+      (if *debug*
+          (begin
+            (display "BOARD -> MOVE-POSSIBLE?\n")
+            (display "current coords: ")
+            (display "x=")
+            (display (send piece get-abs-x))
+            (display " y=")
+            (display (send piece get-abs-y))
+            (display "\nnew coords: ")
+            (display "x=")
+            (display (+ (send piece get-abs-x) (car delta-coord)))
+            (display " y=")
+            (display (+ (send piece get-abs-y) (cdr delta-coord)))
+            (newline)(newline)))
+      ;-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
       (worker (send piece get-blocks)))
     
     ;;FUNC collision?
