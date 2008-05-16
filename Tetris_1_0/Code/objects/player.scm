@@ -11,7 +11,7 @@
     ;;### FIELDS ###
     (init name)
     
-    (define _name name) ;; [string]
+    (define _name "You") ;; [string]
     (define _score 0) ;; [num]
     
     ;;### FIELD ACCESSORS ###
