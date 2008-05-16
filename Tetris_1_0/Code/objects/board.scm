@@ -104,7 +104,7 @@
     ;; <- start-row [num]
     (define/private (shift-down-from-row start-row)
       ;-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
-      (if *debug*
+      (if (send *supervisor* debug?)
           (begin
             (display "BOARD -> SHIFT-DOWN-FROM-ROW\n")
             (display "start-row: ")
@@ -124,7 +124,7 @@
     ;; <- row [num]
     (define/private (delete-row row)
       ;-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
-      (if *debug*
+      (if (send *supervisor* debug?)
           (begin
             (display "BOARD -> DELETE-ROW\n")
             (display "row: ")
@@ -144,7 +144,7 @@
     (define/public (clean-up-board)
       (let ((filled-rows (get-filled-rows)))
         ;-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
-        (if *debug*
+        (if (send *supervisor* debug?)
             (begin
               (display "BOARD -> CLEAN-UP-BOARD\n")
               (display "filled-rows: ")
@@ -204,7 +204,7 @@
               (let* ((new-coords (send (car blocks) get-abs-coords)))
                 (add-dxdy! new-coords dxdy-coords)
                 ;-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
-                (if *debug*
+                (if (send *supervisor* debug?)
                     (begin
                       (display "BOARD -> MOVE-POSSIBLE?\n")
                       (display "current coords: ")

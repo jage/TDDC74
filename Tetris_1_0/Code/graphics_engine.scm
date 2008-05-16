@@ -14,8 +14,8 @@
   (draw-status)
   (draw-interval)
   (draw-design)
-  ;(draw-shadow)
-  ;(draw-next-piece)
+  (draw-shadow)
+  (draw-next-piece)
   (show))
 
 (define (draw-game-over)
@@ -33,8 +33,8 @@
   (for-each
    (lambda (block)
      (draw-block 
-      (cons (+ (send *board* get-board-width) (send block get-rel-x) 2)
-            (- (send *board* get-board-height) (- (send block get-rel-y)) 6))
+      (cons (+ (send *board* get-board-width) (get-x (send block get-rel-coords)) 2)
+            (- (send *board* get-board-height) (- (get-y (send block get-rel-coords))) 6))
       (send (send *supervisor* get-next-piece) get-brush)))
    (send (send *supervisor* get-next-piece) get-blocks)))
 
@@ -59,7 +59,7 @@
   (let ((x-coords '()))
     (for-each 
      (lambda (block)
-       (set! x-coords (append x-coords (list (send block get-abs-x)))))
+       (set! x-coords (append x-coords (list (get-x (send block get-abs-coords))))))
      (send (send *board* get-active-piece) get-blocks))
     (for-each
      (lambda (coord)
@@ -115,15 +115,16 @@
    (* (- (send *board* get-board-height) (get-y block-coords) 1) (send *board* get-pixels-per-unit))
    (send *board* get-pixels-per-unit) (send *board* get-pixels-per-unit) *black-pen* brush)
   
-  (draw-line
-   (* (car block-coords) (send *board* get-pixels-per-unit))
-   (* (- (send *board* get-board-height) (get-y block-coords) 1) (send *board* get-pixels-per-unit))
-   20
-   0
-   *gray-pen* brush)
+; Will be used for the 3D-effect later ...  
+;  (draw-line
+;   (* (car block-coords) (send *board* get-pixels-per-unit))
+;   (* (- (send *board* get-board-height) (get-y block-coords) 1) (send *board* get-pixels-per-unit))
+;   20
+;   0
+;   *gray-pen* brush)
   
   ; DEBUG
-  (if *debug*
+  (if (send *supervisor* debug?)
       (draw-text
        (string-append
         (number->string (get-x block-coords))

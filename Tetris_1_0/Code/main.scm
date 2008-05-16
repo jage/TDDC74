@@ -2,9 +2,6 @@
 
 ;;MAIN
 
-; Should not be used, (send *supervisor* debug?) is the shit now
-(define *debug* #f)
-
 ;; Load all files
 
 (load "utilities.scm")
@@ -18,7 +15,7 @@
 (define (initiate-graphics)
   (load "graphics_engine.scm"))
 
-(define board-size (cons 10 20))
+(define board-size (coords 10 20))
 (define pixels-per-unit 20)
 (define *supervisor* (make-object supervisor% board-size pixels-per-unit))
 (define *board* (send *supervisor* get-board))

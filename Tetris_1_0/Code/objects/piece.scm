@@ -69,9 +69,9 @@
       (for-each
        (lambda (block)
          (send block move-to! (coords (+ (get-x (send block get-rel-coords)) (get-x board-coords))
-                                     (+ (get-y (send block get-rel-coords)) (get-y board-coords)))))
-         _blocks))
-
+                                      (+ (get-y (send block get-rel-coords)) (get-y board-coords)))))
+       _blocks))
+    
     ;;VOID move blocks in xy-plane
     ;; <- direction [symb] (up, down, right, left)
     (define/public (move! direction)
@@ -79,7 +79,7 @@
        (lambda (block)
          (send block move! direction))
        _blocks))
-
+    
     ;;VOID move blocks in xy-plane
     ;; <- dxdy-coords [coords]
     (define/public (move-dxdy! dxdy-coords)
@@ -88,7 +88,7 @@
          (send block move-dx! (get-x dxdy-coords))
          (send block move-dy! (get-y dxdy-coords)))
        _blocks))
-         
+    
     ;;VOID revert rotation
     ;; -> [bool]
     ;;comment: use with care!
@@ -100,19 +100,18 @@
     (define/private (rotate-worker clockwise)
       (for-each
        (lambda (block)
-         (begin
-           (display "rotation: ")
-           (display (rotate-block-coords block clockwise))
-           (newline)
-           (send block move-dx! (get-x (rotate-block-coords block clockwise)))
-           (send block move-dy! (get-y (rotate-block-coords block clockwise)))
-           (send block set-rel-coords! (rotate-block-coords block clockwise))))
+         (let ((new (rotate-block-coords block clockwise))
+               (old (send block get-rel-coords))
+               (abs (send block get-abs-coords)))
+           (send block set-rel-coords! new)
+           (send block set-abs-coords!
+                 (coords (+ (get-x abs) (- (get-x new) (get-x old))) (+ (get-y abs) (- (get-y new) (get-y old)))))))
        _blocks))
     
     ;;VOID rotate block coords
     ;; <- block [block%]
     ;; <- clockwise [bool]
-
+    
     ;; Counter clockwise rotation
     ;; Keep the pieces inside this shape ...
     ;; O = Origo (0 . 0)
@@ -152,7 +151,7 @@
       (set! _blocks (remove block _blocks)))
     
     ;;### FUNCTIONS ###
-      
+    
     ;;FUNC rotate piece
     ;; -> [bool]
     (define/public (rotate)
@@ -165,10 +164,11 @@
       #f)
     
     ;;FUNC revert rotation possible?
+    ;; Has it collided or moved out of canvas?
     ;; -> [bool]
     (define/private (revert-rotation?)
       (or (send *board* will-collide? this (coords 0 0)))
-          (not (send *board* move-possible? this (coords 0 0))))
+      (not (send *board* move-possible? this (coords 0 0))))
     ))
 
 ;;TETRIS PIECES
