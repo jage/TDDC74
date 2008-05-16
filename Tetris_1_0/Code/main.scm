@@ -6,6 +6,7 @@
 
 ;; Load all files
 
+(load "utilities.scm")
 (load "graphics.scm")
 (load "objects/player.scm")
 (load "objects/block.scm")
@@ -22,7 +23,7 @@
 (define (generate-next-piece)
   (set! *next-piece* (create-random-piece)))
 
-(define *board* (make-object board% (cons 10 20) 20))
+(define *board* (make-object board% (size 10 20) 20))
 (initiate-graphics)
 
 (define (initialize)
@@ -36,13 +37,13 @@
   (if (= (remainder *counter* 6) 0)
       (begin
         (if (or (send *board* on-bottom? (send *board* get-active-piece))
-                (not (send *board* move-piece (send *board* get-active-piece) (cons 0 -1))))
+                (not (send *board* move-piece (send *board* get-active-piece) 'down)))
             (begin
               (send *board* clean-up-board)
               (if (not (send *board* add-piece-on-board-default *next-piece*))
                   (begin
                     (stop-loop)
-                    (draw-game-over-text))
+                    )
                   (generate-next-piece)))))))
 
 (define (handle-key-event key)
@@ -60,16 +61,10 @@
       ((eq? key 'up) 
        (send active-piece rotate))
       ((eq? key 'down) 
-       (send *board* move-piece active-piece (cons 0 -1)))
+       (send *board* move-piece active-piece 'down))
       ((eq? key 'left)
-       (send *board* move-piece active-piece (cons -1 0)))
+       (send *board* move-piece active-piece 'left))
       ((eq? key 'right)
-       (send *board* move-piece active-piece (cons 1 0))))))
+       (send *board* move-piece active-piece 'right)))))
 
 (start-loop)
-
-(define (print-coords)
-  (for-each 
-   (lambda (piece) 
-     (display (send piece get-coord)))
-   (send *board* get-pieces)))

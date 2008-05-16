@@ -2,9 +2,9 @@
 ; Space for the board and some information on the left
 ;  and a help feature at the bottom
 (define window-height
-  (+ 4 (send *board* units->pixels (send *board* get-height))))
+  (+ 4 (send *board* units->pixels (send *board* get-board-height))))
 (define window-width
-  (+ (send *board* units->pixels 6) (send *board* units->pixels (send *board* get-width))))
+  (+ (send *board* units->pixels 6) (send *board* units->pixels (send *board* get-board-width))))
 
 ; VOID Draw all the graphics, this procedure is called from the main loop
 (define (draw)
@@ -13,16 +13,16 @@
   (draw-score)
   (draw-status)
   (draw-design)
-  (draw-shadow)
+  ;(draw-shadow)
   (draw-name)
-  (draw-next-piece)
+  ;(draw-next-piece)
   (show))
 
 ; VOID Draw the players name
 (define (draw-name)
   (draw-text
        (string-append "Name: " (send (send *board* get-player) get-name))
-       (+ 10 (send *board* units->pixels (send *board* get-width))) 
+       (+ 10 (send *board* units->pixels (send *board* get-board-width))) 
        10
        *black-pen* *black-brush*))
 
@@ -41,7 +41,7 @@
   (if (not *should-run*)
       (draw-text
        "Paused!"
-       (+ 10 (send *board* units->pixels (send *board* get-width))) 
+       (+ 10 (send *board* units->pixels (send *board* get-board-width))) 
        40
        *black-pen* *black-brush*)))
 
@@ -67,7 +67,7 @@
 ; on the right side of the line there's some game info
 (define (draw-design)
   (draw-line 
-   (send *board* units->pixels (send *board* get-width)) 
+   (send *board* units->pixels (send *board* get-board-width)) 
    10
    0
    window-height
@@ -77,7 +77,7 @@
 (define (draw-score)
   (draw-text
    (string-append "Score: "(number->string (send (send *board* get-player) get-score)))
-   (+ 10 (send *board* units->pixels (send *board* get-width))) 
+   (+ 10 (send *board* units->pixels (send *board* get-board-width))) 
    25
    *black-pen* *black-brush*))
 
@@ -94,31 +94,27 @@
 (define (draw-piece piece)
   (for-each
    (lambda (block)
-     (draw-block (send block get-abs-coord) (send piece get-brush)))
+     (draw-block (send block get-abs-coords) (send piece get-brush)))
    (send piece get-blocks)))
 
 ; VOID
-; <- block-coord [cons]
+; <- block-coords [coords]
 ; <- brush [brush]
-(define (draw-block block-coord brush)
+(define (draw-block block-coords brush)
   (draw-rectangle 
-   (* (car block-coord) (send *board* get-pixels-per-unit)) 
-   (* (- (send *board* get-height) (cdr block-coord) 1) (send *board* get-pixels-per-unit))
+   (* (get-x block-coords) (send *board* get-pixels-per-unit)) 
+   (* (- (send *board* get-board-height) (get-y block-coords) 1) (send *board* get-pixels-per-unit))
    (send *board* get-pixels-per-unit) (send *board* get-pixels-per-unit) *black-pen* brush)
   ; DEBUG
   (if *debug*
       (draw-text
        (string-append
-        (number->string (car block-coord))
+        (number->string (get-x block-coords))
         "x"
-        (number->string (cdr block-coord)))
-       (* (car block-coord) (send *board* get-pixels-per-unit)) 
-       (* (- (send *board* get-height) (cdr block-coord) 1) (send *board* get-pixels-per-unit))
+        (number->string (get-y block-coords)))
+       (* (get-x block-coords) (send *board* get-pixels-per-unit)) 
+       (* (- (send *board* get-board-height) (get-y block-coords) 1) (send *board* get-pixels-per-unit))
        *black-pen* brush)))
-
-;;Should draw it on the board...for now its written in the console
-(define (draw-game-over-text)
-  (display (string-append "Congratulations " (send (send *board* get-player) get-name) "!\nYou scored " (number->string (send (send *board* get-player) get-score)) "!!\nTry again and beat it!\n"))) 
 
 ;; --------------------------------------------------------------------
 ;; The animation loop

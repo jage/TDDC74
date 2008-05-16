@@ -9,54 +9,32 @@
     (super-new)
     
     ;;### FIELDS ###
-    (init type block-list brush)
+    (init piece-structure brush)
     
-    (define _type type)
-    (define _block-list block-list)
+    (define _piece-structure piece-structure)
     (define _brush brush)
-    (define _coord (cons 0 0))
     (define _blocks '())
     (define _clockwise #t)
     
     ;;### CONSTRUCTOR ###
     
     (define/private (constructor)
-      (create-piece _block-list))
+      (create-piece _piece-structure))
     
-    ;;creates piece from block list
+    ;;VOID creates piece from block list
     ;;called by constructor proc
-    ;; <- list of coords
+    ;; <- list [list cons]
     (define/private (create-piece list)
       (if (not (null? list))
           (begin
             (let ((pair (car list)))
-              (send this add-block! (cons (car pair) (cadr pair)))
+              (send this add-block! (coords (car pair) (cadr pair)))
               (create-piece (cdr list))))))
     
     ;;calls the constructor
     (constructor)
     
     ;;### FIELD ACCESSORS ###
-    
-    ;;SET abs. coordinates
-    ;; <- coord [cons]
-    (define/public (set-coord! coord)
-      (set! _coord coord))
-    
-    ;;GET abs. coordinates
-    ;; -> [cons]
-    (define/public (get-coord)
-      _coord)
-    
-    ;;GET abs. x-coord
-    ;; -> [num]
-    (define/public (get-abs-x)
-      (car (get-coord)))
-    
-    ;;GET abs. y-coord
-    ;; -> [num]
-    (define/public (get-abs-y)
-      (cdr (get-coord)))
     
     ;;GET blocks
     ;; -> [list block%]
@@ -67,11 +45,6 @@
     ;; -> [brush]
     (define/public (get-brush)
       _brush)
-    
-    ;;GET type of piece
-    ;; -> [symb]
-    (define/public (get-type)
-      _type)
     
     ;;GET rotateable (override in child classes)
     ;; -> [bool]
@@ -86,10 +59,36 @@
     ;;### METHODS ###
     
     ;;VOID add block
-    ;; <- rel-coord [cons]
-    (define/public (add-block! rel-coord)
-      (set! _blocks (append _blocks (list (make-object block% rel-coord this)))))
+    ;; <- rel-coords [coords]
+    (define/public (add-block! rel-coords)
+      (set! _blocks (append _blocks (list (make-object block% rel-coords this)))))
     
+    ;;VOID move piece to
+    ;; <- board-coords [coords]
+    (define/public (move-to! board-coords)
+      (for-each
+       (lambda (block)
+         (send block move-to! (coords (+ (get-x (send block get-rel-coords)) (get-x board-coords))
+                                     (+ (get-y (send block get-rel-coords)) (get-y board-coords)))))
+         _blocks))
+
+    ;;VOID move blocks in xy-plane
+    ;; <- direction [symb] (up, down, right, left)
+    (define/public (move! direction)
+      (for-each
+       (lambda (block)
+         (send block move! direction))
+       _blocks))
+
+    ;;VOID move blocks in xy-plane
+    ;; <- dxdy-coords [coords]
+    (define/public (move-dxdy! dxdy-coords)
+      (for-each
+       (lambda (block)
+         (send block move-dx! (get-x dxdy-coords))
+         (send block move-dy! (get-y dxdy-coords)))
+       _blocks))
+         
     ;;VOID revert rotation
     ;; -> [bool]
     ;;comment: use with care!
@@ -101,7 +100,13 @@
     (define/private (rotate-worker clockwise)
       (for-each
        (lambda (block)
-         (send block set-rel-coord! (rotate-block-coord block clockwise)))
+         (begin
+           (display "rotation: ")
+           (display (rotate-block-coords block clockwise))
+           (newline)
+           (send block move-dx! (get-x (rotate-block-coords block clockwise)))
+           (send block move-dy! (get-y (rotate-block-coords block clockwise)))
+           (send block set-rel-coords! (rotate-block-coords block clockwise))))
        _blocks))
     
     ;;VOID rotate block coords
@@ -115,31 +120,31 @@
     ;;  X O X X
     ;;  X X X
     ;;    X
-    (define/private (rotate-block-coord block clockwise)
-      (let ((placement (send block get-rel-coord)))
+    (define/private (rotate-block-coords block clockwise)
+      (let ((rel-pos (send block get-rel-coords)))
         (if clockwise
             (cond
-              ((equal? placement (cons 0 1))   (cons -1 0))
-              ((equal? placement (cons 0 -1))  (cons 1 0))
-              ((equal? placement (cons 1 0 ))  (cons 0 1))
-              ((equal? placement (cons 1 1))   (cons -1 1))
-              ((equal? placement (cons 1 -1))  (cons 1 1))
-              ((equal? placement (cons -1 0))  (cons 0 -1))
-              ((equal? placement (cons -1 1))  (cons -1 -1))
-              ((equal? placement (cons -1 -1)) (cons 1 -1))
-              ((equal? placement (cons 2 0))   (cons 0 2))
-              (else placement))            
+              ((equal? rel-pos (coords 0 1))   (coords -1 0))
+              ((equal? rel-pos (coords 0 -1))  (coords 1 0))
+              ((equal? rel-pos (coords 1 0 ))  (coords 0 1))
+              ((equal? rel-pos (coords 1 1))   (coords -1 1))
+              ((equal? rel-pos (coords 1 -1))  (coords 1 1))
+              ((equal? rel-pos (coords -1 0))  (coords 0 -1))
+              ((equal? rel-pos (coords -1 1))  (coords -1 -1))
+              ((equal? rel-pos (coords -1 -1)) (coords 1 -1))
+              ((equal? rel-pos (coords 2 0))   (coords 0 2))
+              (else rel-pos))
             (cond
-              ((equal? placement (cons 0 1))   (cons 1 0))
-              ((equal? placement (cons 0 -1))  (cons -1 0))
-              ((equal? placement (cons 1 0 ))  (cons 0 -1))
-              ((equal? placement (cons 1 1))   (cons 1 -1))
-              ((equal? placement (cons 1 -1))  (cons -1 -1))
-              ((equal? placement (cons -1 0))  (cons 0 1))
-              ((equal? placement (cons -1 1))  (cons 1 1))
-              ((equal? placement (cons -1 -1)) (cons -1 1))
-              ((equal? placement (cons 0 2))   (cons 2 0))
-              (else placement)))))
+              ((equal? rel-pos (coords 0 1))   (coords 1 0))
+              ((equal? rel-pos (coords 0 -1))  (coords -1 0))
+              ((equal? rel-pos (coords 1 0 ))  (coords 0 -1))
+              ((equal? rel-pos (coords 1 1))   (coords 1 -1))
+              ((equal? rel-pos (coords 1 -1))  (coords -1 -1))
+              ((equal? rel-pos (coords -1 0))  (coords 0 1))
+              ((equal? rel-pos (coords -1 1))  (coords 1 1))
+              ((equal? rel-pos (coords -1 -1)) (coords -1 1))
+              ((equal? rel-pos (coords 0 2))   (coords 2 0))
+              (else rel-pos)))))
     
     ;;VOID delete block from piece
     ;; <- block [block%]
@@ -147,7 +152,7 @@
       (set! _blocks (remove block _blocks)))
     
     ;;### FUNCTIONS ###
-    
+      
     ;;FUNC rotate piece
     ;; -> [bool]
     (define/public (rotate)
@@ -162,8 +167,8 @@
     ;;FUNC revert rotation possible?
     ;; -> [bool]
     (define/private (revert-rotation?)
-      (or (send *board* collide? this (cons 0 0))
-          (not (send *board* move-possible? this (cons 0 0)))))
+      (or (send *board* will-collide? this (coords 0 0)))
+          (not (send *board* move-possible? this (coords 0 0))))
     ))
 
 ;;TETRIS PIECES
@@ -183,7 +188,7 @@
     (override toggle? rotate?)
     (define (toggle?) #t)
     (define (rotate?) #t)
-    (super-new (type 'I) (block-list I) (brush *cyan-brush*))))
+    (super-new (piece-structure I) (brush *cyan-brush*))))
 
 ;;J
 (define J-piece%
@@ -191,7 +196,7 @@
     (override toggle? rotate?)
     (define (toggle?) #f)
     (define (rotate?) #t)
-    (super-new (type 'J) (block-list J) (brush *blue-brush*))))
+    (super-new (piece-structure J) (brush *blue-brush*))))
 
 ;;L
 (define L-piece%
@@ -199,7 +204,7 @@
     (override toggle? rotate?)
     (define (toggle?) #f)
     (define (rotate?) #t)
-    (super-new (type 'L) (block-list L) (brush *orange-brush*))))
+    (super-new (piece-structure L) (brush *orange-brush*))))
 
 ;;O
 (define O-piece%
@@ -207,7 +212,7 @@
     (override toggle? rotate?)
     (define (toggle?) #f)
     (define (rotate?) #f)
-    (super-new (type 'O) (block-list O) (brush *yellow-brush*))))
+    (super-new (piece-structure O) (brush *yellow-brush*))))
 
 ;;S
 (define S-piece%
@@ -215,7 +220,7 @@
     (override toggle? rotate?)
     (define (toggle?) #t)
     (define (rotate?) #t)
-    (super-new (type 'S) (block-list S) (brush *green-brush*))))
+    (super-new (piece-structure S) (brush *green-brush*))))
 
 ;;Z
 (define Z-piece%
@@ -223,7 +228,7 @@
     (override toggle? rotate?)
     (define (toggle?) #t)
     (define (rotate?) #t)
-    (super-new (type 'Z) (block-list Z) (brush *red-brush*))))
+    (super-new (piece-structure Z) (brush *red-brush*))))
 
 ;;T
 (define T-piece%
@@ -231,4 +236,4 @@
     (override toggle? rotate?)
     (define (toggle?) #f)
     (define (rotate?) #t)
-    (super-new (type 'T) (block-list T) (brush *magenta-brush*))))
+    (super-new (piece-structure T) (brush *magenta-brush*))))

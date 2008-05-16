@@ -14,7 +14,7 @@
     (define _pieces '()) ;;[list]
     (define _active-piece  #f) ;;[bool]
     (define _player #f) ;;[player%]
-    (define _size board-size-units) ;;[cons]
+    (define _size board-size-units) ;;[size]
     (define _pixels-per-unit pixels-per-unit) ;;[num]
     
     ;;### FIELD ACCESSORS
@@ -45,19 +45,19 @@
       _player)
     
     ;;GET board size
-    ;; -> [cons]
+    ;; -> [size]
     (define/public (get-size)
-      _size)
+      (size (get-width _size) (get-height _size)))
     
     ;;GET board width
     ;; -> [num]
-    (define/public (get-width)
-      (car _size))
+    (define/public (get-board-width)
+      (get-width _size))
     
     ;;GET board height
     ;; -> [num]
-    (define/public (get-height)
-      (cdr _size))
+    (define/public (get-board-height)
+      (get-height _size))
     
     ;;GET pixels per unit
     ;; -> [num]
@@ -70,18 +70,18 @@
     ;; <- piece [piece%]
     ;; -> [bool]
     (define/public (add-piece-on-board-default piece)
-      (send piece set-coord! (cons (/ (get-width) 2) (- (get-height) 1)))
+      (send piece move-to! (coords (/ (get-board-width) 2) (- (get-board-height) 1)))
       (set! _pieces (append (list piece) _pieces))
       (set-active-piece! piece)
-      (not (collide? (send this get-active-piece) (cons 0 0))))
+      (not (will-collide? (send this get-active-piece) (coords 0 0))))
     
     ;;VOID add piece on board (custom pos)
     ;; <- piece [piece%]
-    ;; <- coord [cons]
+    ;; <- coords [coords]
     ;; <- active [bool]
     ;; -> [bool]
-    (define/public (add-piece-on-board-custom piece coord active)
-      (send piece set-coord! coord)
+    (define/public (add-piece-on-board-custom piece coords active)
+      (send piece move-to! coords)
       (set! _pieces (append (list piece) _pieces))
       (if active
           (set-active-piece! piece)))
@@ -94,12 +94,10 @@
     
     ;;VOID move piece
     ;; <- piece [piece%]
-    ;; <- delta-coord [cons]
-    (define/public (move-piece piece delta-coord)
-      (if (and (not (null? piece)) (move-possible? piece delta-coord))
-          (begin
-            (send piece set-coord! (cons (+ (car delta-coord) (send piece get-abs-x)) (+ (cdr delta-coord) (send piece get-abs-y))))
-            #t)
+    ;; <- direction [symb] (up, down, left, right)
+    (define/public (move-piece piece direction)
+      (if (and (not (null? piece)) (move-possible? piece (direction->dxdy direction)))
+          (send piece move! direction)
           #f))
     
     ;;VOID shift down rows
@@ -115,18 +113,12 @@
       ;-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
       (for-each
        (lambda (piece)
-         (let ((piece-shifted #f))
-           (for-each
-            (lambda (block)
-              (if (not piece-shifted)
-                  (if (>= (send block get-abs-y) start-row)
-                      (begin
-                        (send (send block get-parent-piece) set-coord!
-                              (cons (send (send block get-parent-piece) get-abs-x)
-                                    (- (send (send block get-parent-piece) get-abs-y) 1)))
-                        (set! piece-shifted #t)))))
-            (send piece get-blocks))))
-       (send this get-pieces)))
+         (for-each
+          (lambda (block)
+            (if (>= (get-y (send block get-abs-coords)) start-row)
+                (send block move! 'down)))
+          (send piece get-blocks)))
+      (send this get-pieces)))
     
     ;;VOID delete all blocks on row
     ;; <- row [num]
@@ -143,10 +135,10 @@
        (lambda (piece)
          (for-each 
           (lambda (block)
-            (if (= row (send block get-abs-y))
+            (if (= row (get-y (send block get-abs-coords)))
                 (send piece delete-block block)))
-          (send piece get-blocks)))
-       (send this get-pieces)))
+            (send piece get-blocks)))
+         (send this get-pieces)))
     
     ;;VOID clean up filled rows
     (define/public (clean-up-board)
@@ -188,7 +180,7 @@
     ;;VOID drops the piece on the bottom
     ;; <- piece [piece%]
     (define/public (drop-down-piece piece)
-      (if (move-piece piece (cons 0 -1))
+      (if (move-piece piece 'down)
           (drop-down-piece piece)))
     
     
@@ -202,64 +194,64 @@
     
     ;;FUNC move piece possible
     ;; <- piece [piece%]
-    ;; <- delta-coord [cons]
+    ;; <- delta-coord [coord]
     ;; -> [bool]
-    (define/public (move-possible? piece delta-coord)
+    (define/public (move-possible? piece dxdy-coords)
       (define (worker blocks)
         (if (null? blocks)
             #t
             (begin
-              (let* ((block (car blocks))
-                     (new-x (+ (car delta-coord) (send block get-abs-x)))
-                     (new-y (+ (cdr delta-coord) (send block get-abs-y))))
-                (if (and (>= new-x 0) (<= new-x (- (get-width) 1))
-                         (>= new-y 0) (<= new-y (- (get-height) 1))
-                         (not (collide? piece delta-coord)))
+              (let* ((new-coords (send (car blocks) get-abs-coords)))
+                (add-dxdy! new-coords dxdy-coords)
+                ;-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
+                (if *debug*
+                    (begin
+                      (display "BOARD -> MOVE-POSSIBLE?\n")
+                      (display "current coords: ")
+                      (display "x=")
+                      (display (get-x (send (car blocks) get-abs-coords)))
+                      (display " y=")
+                      (display (get-y (send (car blocks) get-abs-coords)))
+                      (display "\nnew coords: ")
+                      (display "x=")
+                      (display (get-x new-coords))
+                      (display " y=")
+                      (display (get-y new-coords))
+                      (newline)(newline)))
+                ;-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
+                (if (and (>= (get-x new-coords) 0) (<= (get-x new-coords) (- (get-board-width) 1))
+                         (>= (get-y new-coords) 0) (<= (get-y new-coords) (- (get-board-height) 1))
+                         (not (will-collide? piece dxdy-coords)))
                     (worker (cdr blocks))
                     #f)))))
-      ;-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
-      (if *debug*
-          (begin
-            (display "BOARD -> MOVE-POSSIBLE?\n")
-            (display "current coords: ")
-            (display "x=")
-            (display (send piece get-abs-x))
-            (display " y=")
-            (display (send piece get-abs-y))
-            (display "\nnew coords: ")
-            (display "x=")
-            (display (+ (send piece get-abs-x) (car delta-coord)))
-            (display " y=")
-            (display (+ (send piece get-abs-y) (cdr delta-coord)))
-            (newline)(newline)))
-      ;-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
       (worker (send piece get-blocks)))
     
-    ;;FUNC collision?
+    ;;FUNC will piece collide with the new coordinates?
     ;; <- piece [piece%]
-    ;; <- delta-coord [cons]
+    ;; <- dxdy-coords [coords]
     ;; -> [bool]
-    (define/public (collide? piece delta-coord)
+    (define/public (will-collide? piece dxdy-coords)
       (let ((collision #f))
         (for-each
          (lambda (block)
-           (for-each
-            (lambda (board-piece)
-              (for-each
-               (lambda (board-piece-block)
-                 (if (not (eq? board-piece piece))
-                     (if (and (= (+ (send block get-abs-x) (car delta-coord)) (send board-piece-block get-abs-x))
-                              (= (+ (send block get-abs-y) (cdr delta-coord)) (send board-piece-block get-abs-y)))
-                         (set! collision #t))))
-               (send board-piece get-blocks)))
-            (send this get-pieces)))
+           (let ((new-coords (send block get-abs-coords)))
+             (add-dxdy! new-coords dxdy-coords)
+             (for-each
+              (lambda (board-piece)
+                (for-each
+                 (lambda (board-piece-block)
+                   (if (not (eq? board-piece piece))
+                       (if (equal? new-coords (send board-piece-block get-abs-coords))
+                           (set! collision #t))))
+                 (send board-piece get-blocks)))
+              (send this get-pieces))))
          (send piece get-blocks))
         collision))
     
     ;;FUNC filled rows on board
     ;; -> [list num]
     (define/public (get-filled-rows)
-      (let* ((i (- (send this get-height) 1))
+      (let* ((i (- (send this get-board-height) 1))
              (j 0)
              (rows '()))
         (define (row-loop)
@@ -267,11 +259,11 @@
            (lambda (piece)
              (for-each
               (lambda (block)
-                (if (= i (send block get-abs-y))
+                (if (= i (get-y (send block get-abs-coords)))
                     (set! j (+ 1 j))))
               (send piece get-blocks)))
            (send this get-pieces))
-          (if (= j (send this get-width))
+          (if (= j (send this get-board-width))
               (set! rows (append rows (list i))))
           (set! i (- i 1))
           (set! j 0)
@@ -287,7 +279,7 @@
       (let ((below #f))
         (for-each
          (lambda (block)
-           (if (< (send block get-abs-y) 0)
+           (if (< (get-y (send block get-abs-coords)) 0)
                (set! below #t)))
          (send piece get-blocks))
         below))
@@ -299,19 +291,32 @@
       (define bottom #f)
       (for-each
        (lambda (block)
-         (if (= 0 (send block get-abs-y))
+         (if (= 0 (get-y (send block get-abs-coords)))
              (set! bottom #t)))
        (send piece get-blocks))
-      bottom)
-    ))
+      bottom))
+  )
 
 ;; ### DEBUG CODE ###
 
+;(load "../utilities.scm")
 ;(load "piece.scm")
 ;(load "block.scm")
 ;(load "../graphics.scm")
 ;
-;(define test-board (make-object board% (cons 10 20) 20))
+;(define test-board (make-object board% (size 10 20) 20))
+;(send test-board add-piece-on-board-custom (make-object piece% '((0 0) (1 0) (-1 0)) *red-brush*) (coords 2 3) #f)
+;
+;(define figur (car (send test-board get-pieces)))
+;
+;(define (print-coords piece)
+;  (for-each
+;   (lambda (block)
+;     (display (send block get-abs-coords))
+;     (newline))
+;   (send piece get-blocks)))
+
+
 ;
 ;(send test-board add-piece-on-board-custom (make-object piece% 'test '((0 0) (1 0) (2 0) (3 0) (4 0) (5 0) (6 0) (7 0) (8 0) (9 0)) *red-brush*) (cons 0 18) #f)
 ;(send test-board add-piece-on-board-custom (make-object piece% 'test '((0 0) (1 0) (2 0) (3 0) (4 0) (5 0) (6 0) (7 0) (8 0) (9 0)) *red-brush*) (cons 0 15) #f)
