@@ -15,7 +15,6 @@
   (draw-interval)
   (draw-design)
   ;(draw-shadow)
-  (draw-name)
   ;(draw-next-piece)
   (show))
 
@@ -34,19 +33,26 @@
   (for-each
    (lambda (block)
      (draw-block 
-      (cons (+ (send *board* get-width) (send block get-rel-x) 2)
-            (- (send *board* get-height) (- (send block get-rel-y)) 6))
+      (cons (+ (send *board* get-board-width) (send block get-rel-x) 2)
+            (- (send *board* get-board-height) (- (send block get-rel-y)) 6))
       (send (send *supervisor* get-next-piece) get-brush)))
    (send (send *supervisor* get-next-piece) get-blocks)))
 
 ; VOID Draw the game status
 (define (draw-status)
-  (if (not *should-run*)
-      (draw-text
-       "Paused!"
-       (+ 10 (send *board* units->pixels (send *board* get-board-width))) 
-       40
-       *black-pen* *black-brush*)))
+  (draw-text
+   (send *supervisor* get-status)
+   (+ 10 (send *board* units->pixels (send *board* get-board-width))) 
+   40
+   *black-pen* *black-brush*))
+
+; VOID Draw the speed interval
+(define (draw-interval)
+  (draw-text
+   (string-append "Interval: " (number->string (send *supervisor* get-interval-time)) " ms")
+   (+ 10 (send *board* units->pixels (send *board* get-board-width))) 
+   25
+   *black-pen* *black-brush*))
 
 ; VOID Should check that the x-values are unique
 (define (draw-shadow)
@@ -80,7 +86,7 @@
 (define (draw-score)
   (draw-text
    (string-append "Score: "(number->string (send (send *board* get-player) get-score)))
-   (+ 10 (send *board* units->pixels (send *board* get-width))) 
+   (+ 10 (send *board* units->pixels (send *board* get-board-width))) 
    10
    *black-pen* *black-brush*))
 
@@ -110,8 +116,8 @@
    (send *board* get-pixels-per-unit) (send *board* get-pixels-per-unit) *black-pen* brush)
   
   (draw-line
-   (* (car block-coord) (send *board* get-pixels-per-unit))
-   (* (- (send *board* get-height) (cdr block-coord) 1) (send *board* get-pixels-per-unit))
+   (* (car block-coords) (send *board* get-pixels-per-unit))
+   (* (- (send *board* get-board-height) (get-y block-coords) 1) (send *board* get-pixels-per-unit))
    20
    0
    *gray-pen* brush)

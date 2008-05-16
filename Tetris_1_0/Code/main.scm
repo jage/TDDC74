@@ -56,10 +56,10 @@
           ((eq? key 'up) 
            (send active-piece rotate))
           ((eq? key 'down) 
-           (send *board* move-piece active-piece (cons 0 -1)))
+           (send *board* move-piece active-piece 'down))
           ((eq? key 'left)
-           (send *board* move-piece active-piece (cons -1 0)))
+           (send *board* move-piece active-piece 'left))
           ((eq? key 'right)
-           (send *board* move-piece active-piece (cons 1 0)))))))
+           (send *board* move-piece active-piece 'right))))))
 
 (send *supervisor* start)
