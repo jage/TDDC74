@@ -12,19 +12,22 @@
   (draw-pieces (send *board* get-pieces))
   (draw-score)
   (draw-status)
+  (draw-interval)
   (draw-design)
   ;(draw-shadow)
   (draw-name)
   ;(draw-next-piece)
   (show))
 
-; VOID Draw the players name
-(define (draw-name)
+(define (draw-game-over)
+  ; Set font
+  (send (get-dc *gui*) set-font (make-object font% 25 'default 'normal 'bold #f 'default #f))
   (draw-text
-       (string-append "Name: " (send (send *board* get-player) get-name))
-       (+ 10 (send *board* units->pixels (send *board* get-board-width))) 
-       10
-       *black-pen* *black-brush*))
+   "Game Over!"
+   20
+   20
+   *black-pen* *black-brush*)
+  (send (get-dc *gui*) set-font (make-object font% 12 'default 'normal 'normal #f 'default #f)))
 
 ; VOID Draws a preview of the next piece
 (define (draw-next-piece)
@@ -33,8 +36,8 @@
      (draw-block 
       (cons (+ (send *board* get-width) (send block get-rel-x) 2)
             (- (send *board* get-height) (- (send block get-rel-y)) 6))
-      (send *next-piece* get-brush)))
-   (send *next-piece* get-blocks)))
+      (send (send *supervisor* get-next-piece) get-brush)))
+   (send (send *supervisor* get-next-piece) get-blocks)))
 
 ; VOID Draw the game status
 (define (draw-status)
@@ -77,8 +80,8 @@
 (define (draw-score)
   (draw-text
    (string-append "Score: "(number->string (send (send *board* get-player) get-score)))
-   (+ 10 (send *board* units->pixels (send *board* get-board-width))) 
-   25
+   (+ 10 (send *board* units->pixels (send *board* get-width))) 
+   10
    *black-pen* *black-brush*))
 
 ; VOID draws pieces 
@@ -105,6 +108,14 @@
    (* (get-x block-coords) (send *board* get-pixels-per-unit)) 
    (* (- (send *board* get-board-height) (get-y block-coords) 1) (send *board* get-pixels-per-unit))
    (send *board* get-pixels-per-unit) (send *board* get-pixels-per-unit) *black-pen* brush)
+  
+  (draw-line
+   (* (car block-coord) (send *board* get-pixels-per-unit))
+   (* (- (send *board* get-height) (cdr block-coord) 1) (send *board* get-pixels-per-unit))
+   20
+   0
+   *gray-pen* brush)
+  
   ; DEBUG
   (if *debug*
       (draw-text
@@ -135,9 +146,8 @@
 
 (define *sleep-time* (fps->seconds 24))
 
-(define *counter* 0)
+(define *counter* 1)
 (define (loop)
-  (if (= *counter* 0) (initialize))
   (when *should-run*
     (set! *counter* (+ *counter* 1))
     (update)
@@ -145,6 +155,9 @@
     (if (= *counter* 24) (set! *counter* 1))
     (sleep *sleep-time*)
     (loop)))
+
+(define (time-to-update?)
+  (= (remainder *counter* (send *supervisor* get-counter-divisor)) 0))
 
 ;; --------------------------------------------------------------------
 ;; The GUI and its components (buttons, menus etc)

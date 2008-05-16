@@ -116,6 +116,9 @@
   (send the-pen-list find-or-create-pen "magenta" 2 'solid))
 (define *orange-pen* 
   (send the-pen-list find-or-create-pen "orange" 2 'solid))
+(define *gray-pen*
+  (send the-pen-list find-or-create-pen "gray" 2 'solid))
+
 
 (define *yellow-brush* 
   (send the-brush-list find-or-create-brush "yellow" 'solid))
@@ -135,7 +138,3 @@
   (send the-brush-list find-or-create-brush "magenta" 'solid))
 (define *orange-brush* 
   (send the-brush-list find-or-create-brush "orange" 'solid))
-
-
-
-
