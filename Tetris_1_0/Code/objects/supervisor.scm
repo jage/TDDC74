@@ -19,7 +19,6 @@
     (define _status "Not started") ;;[string]
     (define _seed #f) ;; [num]
     (define _next-piece #f) ;; [piece]
-    (define _sound-thread #f) ;; [thread]
 
     ;;### CONSTRUCTOR ###
 
