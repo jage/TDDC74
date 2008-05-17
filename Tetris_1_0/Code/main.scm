@@ -21,21 +21,20 @@
 (define *board* (send *supervisor* get-board))
 
 (define (update)
-  (if (time-to-update?)
+  (if (and (time-to-update?)
+           (or (send *board* on-bottom? (send *board* get-active-piece))
+               (not (send *board* move-piece (send *board* get-active-piece) 'down))))
       (begin
-        (if (or (send *board* on-bottom? (send *board* get-active-piece))
-                (not (send *board* move-piece (send *board* get-active-piece) 'down)))
+        (send *board* clean-up-board)
+        (if (not (send *board* add-piece-on-board-default (send *supervisor* get-next-piece)))
             (begin
-              (send *board* clean-up-board)
-              (if (not (send *board* add-piece-on-board-default (send *supervisor* get-next-piece)))
-                  (begin
-                    (display "Game over!")
-                    (newline)
-                    (send *supervisor* stop))
-                  (send *supervisor* generate-next-piece)))))))
+              (display "Game over!")
+              (newline)
+              (send *supervisor* stop))
+            (send *supervisor* generate-next-piece)))))
 
 (define (handle-key-event key)
-  ;; Block if game is paused, unless the key is for unpausing
+  ;; Block if game is paused, unless the key is for unpausing, reset or quit
   (if (or (not (send *supervisor* paused?)) (eq? key #\p) (eq? key #\r) (eq? key #\q))
       (let ((active-piece (send *board* get-active-piece)))
         (cond
