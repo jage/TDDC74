@@ -7,65 +7,65 @@
 (define board%
   (class object%
     (super-new)
-    
+
     ;;### FIELDS ###
     (init-field board-size-units pixels-per-unit)
-    
+
     (define _pieces '()) ;;[list]
     (define _active-piece  #f) ;;[bool]
     (define _player #f) ;;[player%]
     (define _size board-size-units) ;;[size]
     (define _pixels-per-unit pixels-per-unit) ;;[num]
-    
+
     ;;### FIELD ACCESSORS
-    
+
     ;;GET pieces
     ;; -> [list piece%]
     (define/public (get-pieces)
       _pieces)
-    
+
     ;;SET active piece
     ;; <- [piece%]
     (define/public (set-active-piece! piece)
       (set! _active-piece piece))
-    
+
     ;;GET active piece
     ;; <- [piece%]
     (define/public (get-active-piece)
       _active-piece)
-    
+
     ;;SET player
     ;; <- [player%]
     (define/public (set-player! player)
       (set! _player player))
-    
+
     ;;GET player
     ;; -> [player%]
     (define/public (get-player)
       _player)
-    
+
     ;;GET board size
     ;; -> [size]
     (define/public (get-size)
       (size (get-width _size) (get-height _size)))
-    
+
     ;;GET board width
     ;; -> [num]
     (define/public (get-board-width)
       (get-width _size))
-    
+
     ;;GET board height
     ;; -> [num]
     (define/public (get-board-height)
       (get-height _size))
-    
+
     ;;GET pixels per unit
     ;; -> [num]
     (define/public (get-pixels-per-unit)
       _pixels-per-unit)
-    
+
     ;;### METHODS ##
-    
+
     ;;VOID add piece on board (default pos)
     ;; <- piece [piece%]
     ;; -> [bool]
@@ -74,7 +74,7 @@
       ;(set! _pieces (append (list piece) _pieces))
       (set-active-piece! piece)
       (not (will-collide? (send this get-active-piece) (coords 0 0))))
-    
+
     ;;VOID add piece on board (custom pos)
     ;; <- piece [piece%]
     ;; <- coords [coords]
@@ -85,19 +85,19 @@
       (set! _pieces (append (list piece) _pieces))
       (if active
           (set-active-piece! piece)))
-    
+
     ;;VOID delete piece from board
     ;; <- piece [piece%]
     ;; -> [bool]
     (define/private (delete-piece! piece)
       (set! _pieces (remove piece _pieces)))
-    
+
     ;; VOID reset board
     (define/public (reset!)
       (for-each
        (lambda (piece) (delete-piece! piece))
        _pieces))
-    
+
     ;;VOID move piece
     ;; <- piece [piece%]
     ;; <- direction [symb] (up, down, left, right)
@@ -105,7 +105,7 @@
       (if (and (not (null? piece)) (move-possible? piece (direction->dxdy direction)))
           (send piece move! direction)
           #f))
-    
+
     ;;VOID shift down rows
     ;; <- start-row [num]
     (define/private (shift-down-from-row start-row)
@@ -125,7 +125,7 @@
                 (send block move! 'down)))
           (send piece get-blocks)))
       (send this get-pieces)))
-    
+
     ;;VOID delete all blocks on row
     ;; <- row [num]
     (define/private (delete-row row)
@@ -139,13 +139,13 @@
       ;-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
       (for-each
        (lambda (piece)
-         (for-each 
+         (for-each
           (lambda (block)
             (if (= row (get-y (send block get-abs-coords)))
                 (send piece delete-block block)))
             (send piece get-blocks)))
          (send this get-pieces)))
-    
+
     ;;VOID clean up filled rows
     (define/public (clean-up-board)
       (let ((filled-rows (get-filled-rows)))
@@ -167,13 +167,13 @@
          (lambda (row)
            (shift-down-from-row row))
          filled-rows)
-        
+
         ;;deletes all 'garbage' pieces
-        (delete-garbage-pieces) 
-        
+        (delete-garbage-pieces)
+
         ;;update player score based on deleted rows
         (send _player update-score (length filled-rows))))
-    
+
     ;;VOID delete 'garbage'
     (define/private (delete-garbage-pieces)
       (for-each
@@ -182,22 +182,22 @@
                  (piece-below-bottom? piece)) ;;below the board bottom
              (delete-piece! piece)))
        _pieces))
-    
+
     ;;VOID drops the piece on the bottom
     ;; <- piece [piece%]
     (define/public (drop-down-piece piece)
       (if (move-piece piece 'down)
           (drop-down-piece piece)))
-    
-    
+
+
     ;;### FUNCTIONS
-    
+
     ;;FUNC converts units -> pixels
     ;; <- units [num]
     ;; -> [num]
     (define/public (units->pixels units)
       (* (get-pixels-per-unit) units))
-    
+
     ;;FUNC move piece possible
     ;; <- piece [piece%]
     ;; <- delta-coord [coord]
@@ -231,7 +231,7 @@
                     (worker (cdr blocks))
                     #f)))))
       (worker (send piece get-blocks)))
-    
+
     ;;FUNC will piece collide with the new coordinates?
     ;; <- piece [piece%]
     ;; <- dxdy-coords [coords]
@@ -253,7 +253,7 @@
               (send this get-pieces))))
          (send piece get-blocks))
         collision))
-    
+
     ;;FUNC filled rows on board
     ;; -> [list num]
     (define/public (get-filled-rows)
@@ -277,7 +277,7 @@
               rows
               (row-loop)))
         (row-loop)))
-    
+
     ;;FUNC is piece below the bottom?
     ;; <- piece [piece%]
     ;; -> [bool]
@@ -289,7 +289,7 @@
                (set! below #t)))
          (send piece get-blocks))
         below))
-    
+
     ;;FUNC is piece on bottom?
     ;; <- piece [piece%]
     ;; -> [bool]

@@ -34,14 +34,14 @@
 ;; Canvas
 ;; ---------------------------------------------------------------------
 
-(define my-canvas% 
+(define my-canvas%
   (class canvas%
     (override on-char)
     (init-field (key-callback #f))
     (define (on-char event)
       (when key-callback
         (key-callback event)))
-    (super-instantiate ()))) 
+    (super-instantiate ())))
 
 (define (key-fn key-event)
   (let ((key (send key-event get-key-code)))
@@ -98,43 +98,43 @@
   (redraw))
 
 ;; The colors to draw with:
-(define *red-pen* 
+(define *red-pen*
   (send the-pen-list find-or-create-pen "red" 4 'solid))
-(define *green-pen* 
+(define *green-pen*
   (send the-pen-list find-or-create-pen "green" 2 'solid))
-(define *black-pen* 
+(define *black-pen*
   (send the-pen-list find-or-create-pen "black" 2 'solid))
-(define *blue-pen* 
+(define *blue-pen*
   (send the-pen-list find-or-create-pen "blue" 2 'solid))
-(define *yellow-pen* 
+(define *yellow-pen*
   (send the-pen-list find-or-create-pen "yellow" 2 'solid))
-(define *white-pen* 
+(define *white-pen*
   (send the-pen-list find-or-create-pen "white" 2 'solid))
-(define *cyan-pen* 
+(define *cyan-pen*
   (send the-pen-list find-or-create-pen "cyan" 2 'solid))
-(define *magenta-pen* 
+(define *magenta-pen*
   (send the-pen-list find-or-create-pen "magenta" 2 'solid))
-(define *orange-pen* 
+(define *orange-pen*
   (send the-pen-list find-or-create-pen "orange" 2 'solid))
 (define *gray-pen*
   (send the-pen-list find-or-create-pen "gray" 2 'solid))
 
 
-(define *yellow-brush* 
+(define *yellow-brush*
   (send the-brush-list find-or-create-brush "yellow" 'solid))
-(define *red-brush* 
+(define *red-brush*
   (send the-brush-list find-or-create-brush "red" 'solid))
-(define *blue-brush* 
+(define *blue-brush*
   (send the-brush-list find-or-create-brush "blue" 'solid))
-(define *green-brush* 
+(define *green-brush*
   (send the-brush-list find-or-create-brush "green" 'solid))
-(define *white-brush* 
+(define *white-brush*
   (send the-brush-list find-or-create-brush "white" 'solid))
-(define *black-brush* 
+(define *black-brush*
   (send the-brush-list find-or-create-brush "black" 'solid))
-(define *cyan-brush* 
+(define *cyan-brush*
   (send the-brush-list find-or-create-brush "cyan" 'solid))
-(define *magenta-brush* 
+(define *magenta-brush*
   (send the-brush-list find-or-create-brush "magenta" 'solid))
-(define *orange-brush* 
+(define *orange-brush*
   (send the-brush-list find-or-create-brush "orange" 'solid))

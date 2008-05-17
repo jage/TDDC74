@@ -21,7 +21,7 @@
 (define (draw-status)
   (draw-text
    (send *supervisor* get-status)
-   (+ 10 (send *board* units->pixels (send *board* get-board-width))) 
+   (+ 10 (send *board* units->pixels (send *board* get-board-width)))
    40
    *black-pen* *black-brush*))
 
@@ -29,20 +29,20 @@
 (define (draw-interval)
   (draw-text
    (string-append "Interval: " (number->string (send *supervisor* get-interval-time)) " ms")
-   (+ 10 (send *board* units->pixels (send *board* get-board-width))) 
+   (+ 10 (send *board* units->pixels (send *board* get-board-width)))
    25
    *black-pen* *black-brush*))
 
 ; VOID Should check that the x-values are unique
 (define (draw-shadow)
   (let ((x-coords '()))
-    (for-each 
+    (for-each
      (lambda (block)
        (set! x-coords (append x-coords (list (get-x (send block get-abs-coords))))))
      (send (send *board* get-active-piece) get-blocks))
     (for-each
      (lambda (coord)
-       (draw-line 
+       (draw-line
         (send *board* units->pixels coord)
         (- window-height 2)
         (send *board* get-pixels-per-unit)
@@ -54,8 +54,8 @@
 ; Draws a line on the right of the board,
 ; on the right side of the line there's some game info
 (define (draw-design)
-  (draw-line 
-   (send *board* units->pixels (send *board* get-board-width)) 
+  (draw-line
+   (send *board* units->pixels (send *board* get-board-width))
    10
    0
    window-height
@@ -65,11 +65,11 @@
 (define (draw-score)
   (draw-text
    (string-append "Score: "(number->string (send (send *board* get-player) get-score)))
-   (+ 10 (send *board* units->pixels (send *board* get-board-width))) 
+   (+ 10 (send *board* units->pixels (send *board* get-board-width)))
    10
    *black-pen* *black-brush*))
 
-; VOID draws pieces 
+; VOID draws pieces
 ; <- list-of-pieces [list piece%]
 (define (draw-pieces list-of-pieces)
   (for-each
@@ -89,19 +89,19 @@
 ; <- block-coords [coords]
 ; <- brush [brush]
 (define (draw-block block-coords brush)
-  (draw-rectangle 
-   (* (get-x block-coords) (send *board* get-pixels-per-unit)) 
+  (draw-rectangle
+   (* (get-x block-coords) (send *board* get-pixels-per-unit))
    (* (- (send *board* get-board-height) (get-y block-coords) 1) (send *board* get-pixels-per-unit))
    (send *board* get-pixels-per-unit) (send *board* get-pixels-per-unit) *black-pen* brush)
-  
-; Will be used for the 3D-effect later ...  
+
+; Will be used for the 3D-effect later ...
 ;  (draw-line
 ;   (* (car block-coords) (send *board* get-pixels-per-unit))
 ;   (* (- (send *board* get-board-height) (get-y block-coords) 1) (send *board* get-pixels-per-unit))
 ;   20
 ;   0
 ;   *gray-pen* brush)
-  
+
   ; DEBUG
   (if (send *supervisor* debug?)
       (draw-text
@@ -109,7 +109,7 @@
         (number->string (get-x block-coords))
         "x"
         (number->string (get-y block-coords)))
-       (* (get-x block-coords) (send *board* get-pixels-per-unit)) 
+       (* (get-x block-coords) (send *board* get-pixels-per-unit))
        (* (- (send *board* get-board-height) (get-y block-coords) 1) (send *board* get-pixels-per-unit))
        *black-pen* brush)))
 
@@ -132,6 +132,8 @@
 
 (define *sleep-time* (fps->seconds 24))
 
+; Count the counter ...
+; Used for the speed interval
 (define *counter* 1)
 (define (loop)
   (when *should-run*
@@ -142,6 +144,7 @@
     (sleep *sleep-time*)
     (loop)))
 
+; Is it time to update the board? move pieces etc
 (define (time-to-update?)
   (= (remainder *counter* (send *supervisor* get-counter-divisor)) 0))
 
@@ -151,17 +154,17 @@
 
 (define *frame* (make-object frame% "GUI"))
 
-(instantiate button% 
+(instantiate button%
   ("Quit" *frame* (lambda (e b) (hide-gui *gui*)))
   (horiz-margin 2)
   (vert-margin 2)
   (stretchable-width #f))
 
-(define *menu-bar* 
+(define *menu-bar*
   (instantiate menu-bar%
     (*frame*)))
 
-(define *menu* 
+(define *menu*
   (instantiate menu%
     ("Menu" *menu-bar*)))
 
@@ -175,14 +178,14 @@
     (key-callback key-fn)
     (min-height window-height) ;;global
     (min-width window-width) ;global
-    (stretchable-width #f) 
+    (stretchable-width #f)
     (stretchable-height #f)))
 
 (define *buffer* (make-object bitmap% window-width window-height #f))
 (define *dc* (make-object bitmap-dc% *buffer*))
 
-(define *gui* 
-  (make-gui 
+(define *gui*
+  (make-gui
    *frame*
    *canvas*
    *buffer*
