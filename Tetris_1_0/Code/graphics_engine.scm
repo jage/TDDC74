@@ -89,49 +89,54 @@
 ; <- block-coords [coords]
 ; <- brush [brush]
 (define (draw-block block-coords brush light-pen dark-pen)
-  (draw-rectangle
-   (* (get-x block-coords) (send *board* get-pixels-per-unit))
-   (* (- (send *board* get-board-height) (get-y block-coords) 1) (send *board* get-pixels-per-unit))
-   (send *board* get-pixels-per-unit) (send *board* get-pixels-per-unit) *black-pen* brush)
-
-  (draw-line
-   (* (car block-coords) (send *board* get-pixels-per-unit))
-   (* (- (send *board* get-board-height) (get-y block-coords) 1) (send *board* get-pixels-per-unit))
-   (- (send *board* get-pixels-per-unit) 1)
-   0
-   light-pen brush)
-  
-  (draw-line
-   (* (car block-coords) (send *board* get-pixels-per-unit))
-   (* (- (send *board* get-board-height) (get-y block-coords) 1) (send *board* get-pixels-per-unit))
-   0
-   (- (send *board* get-pixels-per-unit) 1)
-   light-pen brush)
-
-  (draw-line
-   (* (car block-coords) (send *board* get-pixels-per-unit))
-   (+ (* (- (send *board* get-board-height) (get-y block-coords) 1) (send *board* get-pixels-per-unit)) (- (send *board* get-pixels-per-unit) 1))
-   (- (send *board* get-pixels-per-unit) 1)
-   0
-   dark-pen brush)
-  
-  (draw-line
-   (+ (* (car block-coords) (send *board* get-pixels-per-unit)) (- (send *board* get-pixels-per-unit) 1))
-   (* (- (send *board* get-board-height) (get-y block-coords) 1) (send *board* get-pixels-per-unit))
-   0
-   (- (send *board* get-pixels-per-unit) 1)
-   dark-pen brush)
-  
-  ; DEBUG
-  (if (send *supervisor* debug?)
-      (draw-text
-       (string-append
-        (number->string (get-x block-coords))
-        "x"
-        (number->string (get-y block-coords)))
-       (* (get-x block-coords) (send *board* get-pixels-per-unit))
-       (* (- (send *board* get-board-height) (get-y block-coords) 1) (send *board* get-pixels-per-unit))
-       *black-pen* brush)))
+  (let ((pixels-per-unit (send *board* get-pixels-per-unit)))
+    (draw-rectangle
+     (* (get-x block-coords) pixels-per-unit)
+     (* (- (send *board* get-board-height) (get-y block-coords) 1) pixels-per-unit)
+     pixels-per-unit pixels-per-unit *black-pen* brush)
+    
+    ; x y dx dy pen brush
+    (draw-line
+     (* (car block-coords) pixels-per-unit)
+     (* (- (send *board* get-board-height) (get-y block-coords) 1) pixels-per-unit)
+     (- pixels-per-unit 1)
+     0
+     light-pen brush)
+    
+    ; x y dx dy pen brush
+    (draw-line
+     (* (car block-coords) pixels-per-unit)
+     (* (- (send *board* get-board-height) (get-y block-coords) 1) pixels-per-unit)
+     0
+     (- pixels-per-unit 1)
+     light-pen brush)
+    
+    ; x y dx dy pen brush
+    (draw-line
+     (* (car block-coords) pixels-per-unit)
+     (+ (* (- (send *board* get-board-height) (get-y block-coords) 1) pixels-per-unit) (- pixels-per-unit 1))
+     (- pixels-per-unit 1)
+     0
+     dark-pen brush)
+    
+    ; x y dx dy pen brush
+    (draw-line
+     (+ (* (car block-coords) pixels-per-unit) (- pixels-per-unit 1))
+     (* (- (send *board* get-board-height) (get-y block-coords) 1) pixels-per-unit)
+     0
+     (- pixels-per-unit 1)
+     dark-pen brush)
+    
+    ; DEBUG
+    (if (send *supervisor* debug?)
+        (draw-text
+         (string-append
+          (number->string (get-x block-coords))
+          "x"
+          (number->string (get-y block-coords)))
+         (* (get-x block-coords) (send *board* get-pixels-per-unit))
+         (* (- (send *board* get-board-height) (get-y block-coords) 1) (send *board* get-pixels-per-unit))
+         *black-pen* brush))))
 
 ;; --------------------------------------------------------------------
 ;; The animation loop
