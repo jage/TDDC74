@@ -2,8 +2,6 @@
 
 ; Speed divisors
 (define speeds (vector 24 12 8 6 3 1))
-; Tetris pieces
-(define pieces (vector I-piece% J-piece% L-piece% O-piece% S-piece% Z-piece% T-piece%))
 
 (define supervisor%
   (class object%

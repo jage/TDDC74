@@ -237,3 +237,6 @@
     (define (toggle?) #f)
     (define (rotate?) #t)
     (super-new (piece-structure T) (brush *magenta-brush*))))
+
+; Tetris pieces
+(define *pieces* (vector I-piece% J-piece% L-piece% O-piece% S-piece% Z-piece% T-piece%))
