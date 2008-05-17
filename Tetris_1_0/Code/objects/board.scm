@@ -300,8 +300,7 @@
          (if (= 0 (get-y (send block get-abs-coords)))
              (set! bottom #t)))
        (send piece get-blocks))
-      bottom))
-  )
+      bottom)))
 
 ;; ### DEBUG CODE ###
 

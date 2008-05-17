@@ -32,8 +32,7 @@
       (set! _seed (random 99999999))
       (random-seed _seed)
       ; Generate the first piece
-      (generate-next-piece)
-      )
+      (generate-next-piece))
     
     ; Call the constructor
     (constructor)
@@ -54,7 +53,7 @@
     (define/public (stop)
       (stop-loop)
       (set! _status "Game over!"))
-
+    
     ; VOID - Quit everything
     (define/public (quit)
       (hide-gui *gui*)
@@ -79,7 +78,7 @@
     
     (define/public (paused?)
       (not *should-run*))
-      
+    
     ;; GET - Get the current board
     ;; -> [board]
     (define/public (get-board)
@@ -88,7 +87,7 @@
     ; GET - Next piece
     (define/public (get-next-piece)
       _next-piece)
-      
+    
     ; VOID - Generate the next piece and place it on the side for preview
     (define/public (generate-next-piece)
       (set! _next-piece (get-random-piece))
@@ -111,7 +110,7 @@
     ;; -> [bool]
     (define/public (debug?)
       _debug)
-       
+    
     ;; VOID - Increase the speed to the next level
     (define/public (increase-speed!)
       (let ((new-speed (+ _speed 1)))
@@ -136,5 +135,4 @@
     
     ;; ### FUNCTIONS ###
     (define/public (get-random-piece)
-      (make-object (vector-ref pieces (random (vector-length pieces))))) 
-    ))
+      (make-object (vector-ref *pieces* (random (vector-length *pieces*)))))))
