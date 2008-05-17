@@ -71,7 +71,7 @@
     ;; -> [bool]
     (define/public (add-piece-on-board-default piece)
       (send piece move-to! (coords (/ (get-board-width) 2) (- (get-board-height) 1)))
-      (set! _pieces (append (list piece) _pieces))
+      ;(set! _pieces (append (list piece) _pieces))
       (set-active-piece! piece)
       (not (will-collide? (send this get-active-piece) (coords 0 0))))
     

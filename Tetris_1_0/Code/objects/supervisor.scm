@@ -29,7 +29,7 @@
       ; Initiate board
       (set! _board (make-object board% _board-size _pixels-per-unit))
       ; Set default speed
-      (set! _speed 1)
+      (set! _speed 2)
       ; Generate and set random seed for the piece generation
       (set! _seed (random 99999999))
       (random-seed _seed)
@@ -91,10 +91,15 @@
     (define/public (get-next-piece)
       _next-piece)
       
-    ; VOID - Generate the next piece
-    ; XXX Maybe this should be private
+    ; VOID - Generate the next piece and place it on the side for preview
     (define/public (generate-next-piece)
-      (set! _next-piece (get-random-piece)))
+      (set! _next-piece (get-random-piece))
+      (send _board add-piece-on-board-custom 
+            _next-piece
+            (coords (+ (send _board get-board-width) 2)
+                    (- (send _board get-board-height) 6))
+            #f)
+      )
     
     ;; VOID - Set debug mode
     (define/public (enable-debug)
@@ -133,10 +138,5 @@
     
     ;; ### FUNCTIONS ###
     (define/public (get-random-piece)
-      (make-object (vector-ref pieces (random (vector-length pieces)))))
-    
-    (define (sound-loop)
-      (play-sound "/Users/jage/Desktop/Tetris short.wav" #f)
-      (sound-loop))
-    
+      (make-object (vector-ref pieces (random (vector-length pieces))))) 
     ))

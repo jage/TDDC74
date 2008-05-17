@@ -15,28 +15,7 @@
   (draw-interval)
   (draw-design)
   (draw-shadow)
-  (draw-next-piece)
   (show))
-
-(define (draw-game-over)
-  ; Set font
-  (send (get-dc *gui*) set-font (make-object font% 25 'default 'normal 'bold #f 'default #f))
-  (draw-text
-   "Game Over!"
-   20
-   20
-   *black-pen* *black-brush*)
-  (send (get-dc *gui*) set-font (make-object font% 12 'default 'normal 'normal #f 'default #f)))
-
-; VOID Draws a preview of the next piece
-(define (draw-next-piece)
-  (for-each
-   (lambda (block)
-     (draw-block 
-      (cons (+ (send *board* get-board-width) (get-x (send block get-rel-coords)) 2)
-            (- (send *board* get-board-height) (- (get-y (send block get-rel-coords))) 6))
-      (send (send *supervisor* get-next-piece) get-brush)))
-   (send (send *supervisor* get-next-piece) get-blocks)))
 
 ; VOID Draw the game status
 (define (draw-status)
