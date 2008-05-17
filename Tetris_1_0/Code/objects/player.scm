@@ -9,17 +9,10 @@
     (super-new)
     
     ;;### FIELDS ###
-    (init name)
     
-    (define _name "You") ;; [string]
     (define _score 0) ;; [num]
     
     ;;### FIELD ACCESSORS ###
-    
-    ;;GET player name
-    ;; -> [string]
-    (define/public (get-name)
-      _name)
     
     ;;GET player score
     ;; -> [num]

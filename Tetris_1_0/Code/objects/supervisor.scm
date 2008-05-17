@@ -45,7 +45,7 @@
     
     ; VOID - Start the game
     (define/public (start)
-      (send _board set-player! (make-object player% "Test"))
+      (send _board set-player! (make-object player%))
       (send _board add-piece-on-board-default (get-next-piece))
       (generate-next-piece)
       (initiate-graphics)
