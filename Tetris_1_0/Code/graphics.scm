@@ -98,30 +98,64 @@
   (redraw))
 
 ;; The colors to draw with:
+(define *light-red-pen*
+  (send the-pen-list find-or-create-pen "orangered" 1 'solid))
 (define *red-pen*
-  (send the-pen-list find-or-create-pen "red" 4 'solid))
+  (send the-pen-list find-or-create-pen "red" 1 'solid))
+(define *dark-red-pen*
+  (send the-pen-list find-or-create-pen "darkred" 1 'solid))
+
+(define *light-green-pen*
+  (send the-pen-list find-or-create-pen "lawngreen" 1 'solid))
 (define *green-pen*
-  (send the-pen-list find-or-create-pen "green" 2 'solid))
+  (send the-pen-list find-or-create-pen "green" 1 'solid))
+(define *dark-green-pen*
+  (send the-pen-list find-or-create-pen "darkgreen" 1 'solid))
+
 (define *black-pen*
-  (send the-pen-list find-or-create-pen "black" 2 'solid))
+  (send the-pen-list find-or-create-pen "black" 1 'solid))
+
+(define *light-blue-pen*
+  (send the-pen-list find-or-create-pen "royalblue" 1 'solid))
 (define *blue-pen*
-  (send the-pen-list find-or-create-pen "blue" 2 'solid))
+  (send the-pen-list find-or-create-pen "blue" 1 'solid))
+(define *dark-blue-pen*
+  (send the-pen-list find-or-create-pen "darkblue" 1 'solid))
+
+(define *light-yellow-pen*
+  (send the-pen-list find-or-create-pen "yellow" 1 'solid))
 (define *yellow-pen*
-  (send the-pen-list find-or-create-pen "yellow" 2 'solid))
+  (send the-pen-list find-or-create-pen "gold" 1 'solid))
+(define *dark-yellow-pen*
+  (send the-pen-list find-or-create-pen "goldenrod" 1 'solid))
+
 (define *white-pen*
-  (send the-pen-list find-or-create-pen "white" 2 'solid))
+  (send the-pen-list find-or-create-pen "white" 1 'solid))
+
+(define *light-cyan-pen*
+  (send the-pen-list find-or-create-pen "lightcyan" 1 'solid))
 (define *cyan-pen*
-  (send the-pen-list find-or-create-pen "cyan" 2 'solid))
+  (send the-pen-list find-or-create-pen "cyan" 1 'solid))
+(define *dark-cyan-pen*
+  (send the-pen-list find-or-create-pen "darkcyan" 1 'solid))
+
+(define *light-magenta-pen*
+  (send the-pen-list find-or-create-pen "mediumorchid" 1 'solid))
 (define *magenta-pen*
-  (send the-pen-list find-or-create-pen "magenta" 2 'solid))
+  (send the-pen-list find-or-create-pen "magenta" 1 'solid))
+(define *dark-magenta-pen*
+  (send the-pen-list find-or-create-pen "darkmagenta" 1 'solid))
+
+(define *light-orange-pen*
+  (send the-pen-list find-or-create-pen "sandybrown" 1 'solid))
 (define *orange-pen*
-  (send the-pen-list find-or-create-pen "orange" 2 'solid))
-(define *gray-pen*
-  (send the-pen-list find-or-create-pen "gray" 2 'solid))
+  (send the-pen-list find-or-create-pen "orange" 1 'solid))
+(define *dark-orange-pen*
+  (send the-pen-list find-or-create-pen "chocolate" 1 'solid))
 
 
 (define *yellow-brush*
-  (send the-brush-list find-or-create-brush "yellow" 'solid))
+  (send the-brush-list find-or-create-brush "gold" 'solid))
 (define *red-brush*
   (send the-brush-list find-or-create-brush "red" 'solid))
 (define *blue-brush*

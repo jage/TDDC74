@@ -9,12 +9,14 @@
     (super-new)
 
     ;;### FIELDS ###
-    (init piece-structure brush)
+    (init piece-structure brush light-pen dark-pen)
 
     (define _piece-structure piece-structure)
-    (define _brush brush)
+    (define _brush brush) ; [brush]
+    (define _light-pen light-pen) ; [pen]
+    (define _dark-pen dark-pen) ; [pen]
     (define _blocks '())
-    (define _clockwise #t)
+    (define _clockwise #t) ; [bool]
 
     ;;### CONSTRUCTOR ###
 
@@ -46,6 +48,16 @@
     (define/public (get-brush)
       _brush)
 
+    ;;GET light pen
+    ;; -> [pen]
+    (define/public (get-light-pen)
+      _light-pen)
+    
+    ;;GET dark pen
+    ;; -> [pen]
+    (define/public (get-dark-pen)
+      _dark-pen)
+    
     ;;GET rotateable (override in child classes)
     ;; -> [bool]
     (define/public (rotate?)
@@ -188,7 +200,10 @@
     (override toggle? rotate?)
     (define (toggle?) #t)
     (define (rotate?) #t)
-    (super-new (piece-structure I) (brush *cyan-brush*))))
+    (super-new (piece-structure I) 
+               (brush *cyan-brush*) 
+               (light-pen *light-cyan-pen*) 
+               (dark-pen *dark-cyan-pen*))))
 
 ;;J
 (define J-piece%
@@ -196,7 +211,10 @@
     (override toggle? rotate?)
     (define (toggle?) #f)
     (define (rotate?) #t)
-    (super-new (piece-structure J) (brush *blue-brush*))))
+    (super-new (piece-structure J) 
+               (brush *blue-brush*)
+               (light-pen *light-blue-pen*)
+               (dark-pen *dark-blue-pen*))))
 
 ;;L
 (define L-piece%
@@ -204,7 +222,10 @@
     (override toggle? rotate?)
     (define (toggle?) #f)
     (define (rotate?) #t)
-    (super-new (piece-structure L) (brush *orange-brush*))))
+    (super-new (piece-structure L) 
+               (brush *orange-brush*)
+               (light-pen *light-orange-pen*)
+               (dark-pen *dark-orange-pen*))))
 
 ;;O
 (define O-piece%
@@ -212,7 +233,10 @@
     (override toggle? rotate?)
     (define (toggle?) #f)
     (define (rotate?) #f)
-    (super-new (piece-structure O) (brush *yellow-brush*))))
+    (super-new (piece-structure O)
+               (brush *yellow-brush*)
+               (light-pen *light-yellow-pen*)
+               (dark-pen *dark-yellow-pen*))))
 
 ;;S
 (define S-piece%
@@ -220,7 +244,10 @@
     (override toggle? rotate?)
     (define (toggle?) #t)
     (define (rotate?) #t)
-    (super-new (piece-structure S) (brush *green-brush*))))
+    (super-new (piece-structure S)
+               (brush *green-brush*)
+               (light-pen *light-green-pen*)
+               (dark-pen *dark-green-pen*))))
 
 ;;Z
 (define Z-piece%
@@ -228,7 +255,10 @@
     (override toggle? rotate?)
     (define (toggle?) #t)
     (define (rotate?) #t)
-    (super-new (piece-structure Z) (brush *red-brush*))))
+    (super-new (piece-structure Z) 
+               (brush *red-brush*)
+               (light-pen *light-red-pen*)
+               (dark-pen *dark-red-pen*))))
 
 ;;T
 (define T-piece%
@@ -236,7 +266,10 @@
     (override toggle? rotate?)
     (define (toggle?) #f)
     (define (rotate?) #t)
-    (super-new (piece-structure T) (brush *magenta-brush*))))
+    (super-new (piece-structure T)
+               (brush *magenta-brush*)
+               (light-pen *light-magenta-pen*)
+               (dark-pen *dark-magenta-pen*))))
 
 ; Tetris pieces
 (define *pieces* (vector I-piece% J-piece% L-piece% O-piece% S-piece% Z-piece% T-piece%))

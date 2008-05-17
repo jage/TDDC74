@@ -82,26 +82,46 @@
 (define (draw-piece piece)
   (for-each
    (lambda (block)
-     (draw-block (send block get-abs-coords) (send piece get-brush)))
+     (draw-block (send block get-abs-coords) (send piece get-brush) (send piece get-light-pen) (send piece get-dark-pen)))
    (send piece get-blocks)))
 
 ; VOID
 ; <- block-coords [coords]
 ; <- brush [brush]
-(define (draw-block block-coords brush)
+(define (draw-block block-coords brush light-pen dark-pen)
   (draw-rectangle
    (* (get-x block-coords) (send *board* get-pixels-per-unit))
    (* (- (send *board* get-board-height) (get-y block-coords) 1) (send *board* get-pixels-per-unit))
    (send *board* get-pixels-per-unit) (send *board* get-pixels-per-unit) *black-pen* brush)
 
-; Will be used for the 3D-effect later ...
-;  (draw-line
-;   (* (car block-coords) (send *board* get-pixels-per-unit))
-;   (* (- (send *board* get-board-height) (get-y block-coords) 1) (send *board* get-pixels-per-unit))
-;   20
-;   0
-;   *gray-pen* brush)
+  (draw-line
+   (* (car block-coords) (send *board* get-pixels-per-unit))
+   (* (- (send *board* get-board-height) (get-y block-coords) 1) (send *board* get-pixels-per-unit))
+   (- (send *board* get-pixels-per-unit) 1)
+   0
+   light-pen brush)
+  
+  (draw-line
+   (* (car block-coords) (send *board* get-pixels-per-unit))
+   (* (- (send *board* get-board-height) (get-y block-coords) 1) (send *board* get-pixels-per-unit))
+   0
+   (- (send *board* get-pixels-per-unit) 1)
+   light-pen brush)
 
+  (draw-line
+   (* (car block-coords) (send *board* get-pixels-per-unit))
+   (+ (* (- (send *board* get-board-height) (get-y block-coords) 1) (send *board* get-pixels-per-unit)) (- (send *board* get-pixels-per-unit) 1))
+   (- (send *board* get-pixels-per-unit) 1)
+   0
+   dark-pen brush)
+  
+  (draw-line
+   (+ (* (car block-coords) (send *board* get-pixels-per-unit)) (- (send *board* get-pixels-per-unit) 1))
+   (* (- (send *board* get-board-height) (get-y block-coords) 1) (send *board* get-pixels-per-unit))
+   0
+   (- (send *board* get-pixels-per-unit) 1)
+   dark-pen brush)
+  
   ; DEBUG
   (if (send *supervisor* debug?)
       (draw-text
