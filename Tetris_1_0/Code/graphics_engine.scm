@@ -4,7 +4,7 @@
 (define window-height
   (+ 4 (send *board* units->pixels (send *board* get-board-height))))
 (define window-width
-  (+ (send *board* units->pixels 6) (send *board* units->pixels (send *board* get-board-width))))
+  (+ (send *board* units->pixels 7) (send *board* units->pixels (send *board* get-board-width))))
 
 ; VOID Draw all the graphics, this procedure is called from the main loop
 (define (draw)
