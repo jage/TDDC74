@@ -25,14 +25,7 @@
 
     (define/private (constructor)
       ; Initiate board
-      (set! _board (make-object board% _board-size _pixels-per-unit))
-      ; Set default speed
-      (set! _speed 2)
-      ; Generate and set random seed for the piece generation
-      (set! _seed (random 99999999))
-      (random-seed _seed)
-      ; Generate the first piece
-      (generate-next-piece))
+      (set! _board (make-object board% _board-size _pixels-per-unit)))
 
     ; Call the constructor
     (constructor)
@@ -42,10 +35,22 @@
 
     ; VOID - Start the game
     (define/public (start)
-      (send _board set-player! (make-object player%))
-      (send _board add-piece-on-board-default (get-next-piece))
+      ; The first piece
       (generate-next-piece)
+      ; Generate and set random seed for the piece generation
+      (set! _seed (random 99999999))
+      (random-seed _seed)
+      ; Set default speed
+      (set! _speed 2)
+      ; Add player
+      (send _board set-player! (make-object player%))
+      ; Add the first piece
+      (send _board add-piece-on-board-default (get-next-piece))
+      ; Generate the second piece
+      (generate-next-piece)
+      ; Time for graphics
       (initiate-graphics)
+      ; And we're off!
       (start-loop)
       (set! _status "Running!"))
 
