@@ -60,6 +60,7 @@
     ; VOID - Quit everything
     (define/public (quit)
       (hide-gui *gui*)
+      (send _board reset!)
       (stop-loop)
       (set! _status "Not Running"))
     

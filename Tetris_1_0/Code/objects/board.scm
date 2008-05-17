@@ -92,6 +92,12 @@
     (define/private (delete-piece! piece)
       (set! _pieces (remove piece _pieces)))
     
+    ;; VOID reset board
+    (define/public (reset!)
+      (for-each
+       (lambda (piece) (delete-piece! piece))
+       _pieces))
+    
     ;;VOID move piece
     ;; <- piece [piece%]
     ;; <- direction [symb] (up, down, left, right)

@@ -36,7 +36,7 @@
 
 (define (handle-key-event key)
   ;; Block if game is paused, unless the key is for unpausing
-  (if (or (not (send *supervisor* paused?)) (eq? key #\p))
+  (if (or (not (send *supervisor* paused?)) (eq? key #\p) (eq? key #\r) (eq? key #\q))
       (let ((active-piece (send *board* get-active-piece)))
         (cond
           ((eq? key #\i)
@@ -47,6 +47,9 @@
            (send *supervisor* pause))
           ((eq? key #\q)
            (send *supervisor* quit))
+          ((eq? key #\r)
+           (send *supervisor* quit)
+           (send *supervisor* start))
           ((eq? key #\space)
            (send *board* drop-down-piece active-piece)
            (set! *counter* 1))
