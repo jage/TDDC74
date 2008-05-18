@@ -14,6 +14,7 @@
 (load "objects/board.scm")
 (load "objects/supervisor.scm")
 
+; Used by supervisor when it's time to show some graphics
 (define (initiate-graphics)
   (load "graphics_engine.scm"))
 
