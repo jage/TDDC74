@@ -1,6 +1,7 @@
-;;TETRIS
-;;block.scm
-
+;; Tetris - objects/block.scm
+;;
+;; Written by Johan Eckerström and Viktor Deleskog
+;; For TDDC74 at LiU, 2008
 
 ;;BLOCK CLASS
 
@@ -68,5 +69,4 @@
         ((eq? direction 'up) (move-dy! 1))
         ((eq? direction 'down) (move-dy! -1))
         ((eq? direction 'left) (move-dx! -1))
-        ((eq? direction 'right) (move-dx! 1))))
-    ))
+        ((eq? direction 'right) (move-dx! 1))))))

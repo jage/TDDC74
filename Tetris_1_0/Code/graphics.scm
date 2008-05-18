@@ -1,4 +1,8 @@
-;; Graphics library for Tetris
+;; Tetris - graphics.scm
+;;
+;; Written by Annika Silvervarg at IDA
+;; Modified by Johan Eckerström and Viktor Deleskog
+
 
 ;; ---------------------------------------------------------------------
 ;; GUI

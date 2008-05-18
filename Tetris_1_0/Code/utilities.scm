@@ -1,8 +1,8 @@
-;;TETRIS
-;;utilities.scm
+;; Tetris - objects/utilities.scm
+;;
+;; Written by Johan Eckerström and Viktor Deleskog
+;; For TDDC74 at LiU, 2008
 
-
-;;TETRIS UTILITIES
 
 ;;### COORDS ABSTRACTION ###
 

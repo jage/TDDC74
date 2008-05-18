@@ -1,7 +1,14 @@
+;; Tetris - objects/supervisor.scm
+;;
+;; Written by Johan Eckerström and Viktor Deleskog
+;; For TDDC74 at LiU, 2008
+
 ;; ### CONSTANTS ###
 
 ; Speed divisors
 (define speeds (vector 24 12 8 6 3 1))
+
+;; SUPERVISOR CLASS
 
 (define supervisor%
   (class object%
@@ -137,5 +144,8 @@
       (quotient 1000 (/ 24 (get-counter-divisor))))
 
     ;; ### FUNCTIONS ###
+    
+    ;; GET - Return a random piece
+    ;; -> [piece]
     (define/public (get-random-piece)
       (make-object (vector-ref *pieces* (random (vector-length *pieces*)))))))

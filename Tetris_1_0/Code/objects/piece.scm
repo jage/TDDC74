@@ -1,6 +1,7 @@
-;;TETRIS
-;;piece.scm
-
+;; Tetris - objects/piece.scm
+;;
+;; Written by Johan Eckerström and Viktor Deleskog
+;; For TDDC74 at LiU, 2008
 
 ;;PIECE CLASS
 
@@ -73,15 +74,19 @@
     ;;VOID add block
     ;; <- rel-coords [coords]
     (define/public (add-block! rel-coords)
-      (set! _blocks (append _blocks (list (make-object block% rel-coords this)))))
+      (set! _blocks 
+            (append _blocks (list (make-object block% rel-coords this)))))
 
     ;;VOID move piece to
     ;; <- board-coords [coords]
     (define/public (move-to! board-coords)
       (for-each
        (lambda (block)
-         (send block move-to! (coords (+ (get-x (send block get-rel-coords)) (get-x board-coords))
-                                      (+ (get-y (send block get-rel-coords)) (get-y board-coords)))))
+         (send block move-to! 
+               (coords (+ (get-x (send block get-rel-coords)) 
+                          (get-x board-coords))
+                       (+ (get-y (send block get-rel-coords)) 
+                          (get-y board-coords)))))
        _blocks))
 
     ;;VOID move blocks in xy-plane
@@ -117,7 +122,8 @@
                (abs (send block get-abs-coords)))
            (send block set-rel-coords! new)
            (send block set-abs-coords!
-                 (coords (+ (get-x abs) (- (get-x new) (get-x old))) (+ (get-y abs) (- (get-y new) (get-y old)))))))
+                 (coords (+ (get-x abs) (- (get-x new) (get-x old)))
+                         (+ (get-y abs) (- (get-y new) (get-y old)))))))
        _blocks))
 
     ;;VOID rotate block coords
@@ -180,8 +186,7 @@
     ;; -> [bool]
     (define/private (revert-rotation?)
       (or (send *board* will-collide? this (coords 0 0)))
-      (not (send *board* move-possible? this (coords 0 0))))
-    ))
+      (not (send *board* move-possible? this (coords 0 0))))))
 
 ;;TETRIS PIECES
 
@@ -272,4 +277,5 @@
                (dark-pen *dark-magenta-pen*))))
 
 ; Tetris pieces
-(define *pieces* (vector I-piece% J-piece% L-piece% O-piece% S-piece% Z-piece% T-piece%))
+(define *pieces* 
+  (vector I-piece% J-piece% L-piece% O-piece% S-piece% Z-piece% T-piece%))

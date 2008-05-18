@@ -1,10 +1,18 @@
+;; Tetris - graphics_engine.scm
+;;
+;; Built upon code written by Annika Silvervarg
+;; Written by Johan Eckerström and Viktor Deleskog
+;; For TDDC74 at LiU, 2008
+
+
 ; Height and width for the drawing canvas
 ; Space for the board and some information on the left
 ;  and a help feature at the bottom
 (define window-height
   (+ 4 (send *board* units->pixels (send *board* get-board-height))))
 (define window-width
-  (+ (send *board* units->pixels 7) (send *board* units->pixels (send *board* get-board-width))))
+  (+ (send *board* units->pixels 7) 
+     (send *board* units->pixels (send *board* get-board-width))))
 
 ; VOID Draw all the graphics, this procedure is called from the main loop
 (define (draw)
@@ -28,17 +36,19 @@
 ; VOID Draw the speed interval
 (define (draw-interval)
   (draw-text
-   (string-append "Interval: " (number->string (send *supervisor* get-interval-time)) " ms")
+   (string-append "Interval: " 
+                  (number->string (send *supervisor* get-interval-time)) " ms")
    (+ 10 (send *board* units->pixels (send *board* get-board-width)))
    25
    *black-pen* *black-brush*))
 
-; VOID Should check that the x-values are unique
+; VOID Draws a shadow on the floor, doesn't care for duplicate x-values
 (define (draw-shadow)
   (let ((x-coords '()))
     (for-each
      (lambda (block)
-       (set! x-coords (append x-coords (list (get-x (send block get-abs-coords))))))
+       (set! x-coords 
+             (append x-coords (list (get-x (send block get-abs-coords))))))
      (send (send *board* get-active-piece) get-blocks))
     (for-each
      (lambda (coord)
@@ -64,7 +74,8 @@
 ; VOID Draw the current score
 (define (draw-score)
   (draw-text
-   (string-append "Score: "(number->string (send (send *board* get-player) get-score)))
+   (string-append "Score: " 
+                  (number->string (send (send *board* get-player) get-score)))
    (+ 10 (send *board* units->pixels (send *board* get-board-width)))
    10
    *black-pen* *black-brush*))
@@ -82,7 +93,10 @@
 (define (draw-piece piece)
   (for-each
    (lambda (block)
-     (draw-block (send block get-abs-coords) (send piece get-brush) (send piece get-light-pen) (send piece get-dark-pen)))
+     (draw-block (send block get-abs-coords) 
+                 (send piece get-brush) 
+                 (send piece get-light-pen) 
+                 (send piece get-dark-pen)))
    (send piece get-blocks)))
 
 ; VOID
@@ -92,13 +106,15 @@
   (let ((pixels-per-unit (send *board* get-pixels-per-unit)))
     (draw-rectangle
      (* (get-x block-coords) pixels-per-unit)
-     (* (- (send *board* get-board-height) (get-y block-coords) 1) pixels-per-unit)
+     (* (- (send *board* get-board-height) (get-y block-coords) 1)
+        pixels-per-unit)
      pixels-per-unit pixels-per-unit *black-pen* brush)
     
     ; x y dx dy pen brush
     (draw-line
      (* (car block-coords) pixels-per-unit)
-     (* (- (send *board* get-board-height) (get-y block-coords) 1) pixels-per-unit)
+     (* (- (send *board* get-board-height) (get-y block-coords) 1)
+        pixels-per-unit)
      (- pixels-per-unit 1)
      0
      light-pen brush)
@@ -106,7 +122,8 @@
     ; x y dx dy pen brush
     (draw-line
      (* (car block-coords) pixels-per-unit)
-     (* (- (send *board* get-board-height) (get-y block-coords) 1) pixels-per-unit)
+     (* (- (send *board* get-board-height) (get-y block-coords) 1) 
+        pixels-per-unit)
      0
      (- pixels-per-unit 1)
      light-pen brush)
@@ -114,7 +131,9 @@
     ; x y dx dy pen brush
     (draw-line
      (* (car block-coords) pixels-per-unit)
-     (+ (* (- (send *board* get-board-height) (get-y block-coords) 1) pixels-per-unit) (- pixels-per-unit 1))
+     (+ (* (- (send *board* get-board-height) (get-y block-coords) 1) 
+           pixels-per-unit) 
+        (- pixels-per-unit 1))
      (- pixels-per-unit 1)
      0
      dark-pen brush)
@@ -122,7 +141,8 @@
     ; x y dx dy pen brush
     (draw-line
      (+ (* (car block-coords) pixels-per-unit) (- pixels-per-unit 1))
-     (* (- (send *board* get-board-height) (get-y block-coords) 1) pixels-per-unit)
+     (* (- (send *board* get-board-height) (get-y block-coords) 1)
+        pixels-per-unit)
      0
      (- pixels-per-unit 1)
      dark-pen brush)
@@ -135,7 +155,8 @@
           "x"
           (number->string (get-y block-coords)))
          (* (get-x block-coords) (send *board* get-pixels-per-unit))
-         (* (- (send *board* get-board-height) (get-y block-coords) 1) (send *board* get-pixels-per-unit))
+         (* (- (send *board* get-board-height) (get-y block-coords) 1)
+            (send *board* get-pixels-per-unit))
          *black-pen* brush))))
 
 ;; --------------------------------------------------------------------
@@ -143,23 +164,28 @@
 ;; --------------------------------------------------------------------
 (define *should-run* #f)
 
+; VOID - Start the loop
 (define (start-loop)
   (when (not *should-run*)
     (set! *should-run* #t)
     (thread loop)
     (show-gui *gui*)))
 
+; VOID - Stop the loop
 (define (stop-loop)
   (set! *should-run* #f))
 
+; GET - fps to seconds
 (define (fps->seconds fps)
   (/ 1 fps))
 
+; How long to sleep
 (define *sleep-time* (fps->seconds 24))
 
 ; Count the counter ...
 ; Used for the speed interval
 (define *counter* 1)
+; VOID
 (define (loop)
   (when *should-run*
     (set! *counter* (+ *counter* 1))
@@ -169,7 +195,8 @@
     (sleep *sleep-time*)
     (loop)))
 
-; Is it time to update the board? move pieces etc
+; GET - Is it time to update the board? move pieces etc
+; -> [bool]
 (define (time-to-update?)
   (= (remainder *counter* (send *supervisor* get-counter-divisor)) 0))
 

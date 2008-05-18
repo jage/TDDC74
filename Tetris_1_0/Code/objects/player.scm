@@ -1,8 +1,9 @@
-;;TETRIS
-;;player.scm
+;; Tetris - objects/player.scm
+;;
+;; Written by Johan Eckerström and Viktor Deleskog
+;; For TDDC74 at LiU, 2008
 
-
-;;PLAYER CLASS
+;; PLAYER CLASS
 
 (define player%
   (class object%
@@ -29,5 +30,4 @@
     ;;VOID update player score based on rows
     ;; <- rows [num]
     (define/public (update-score rows)
-      (set! _score (+ _score (* rows (* 10 rows)))))
-    ))
+      (set! _score (+ _score (* rows (* 10 rows)))))))

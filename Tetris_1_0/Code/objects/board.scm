@@ -1,6 +1,7 @@
-;;TETRIS
-;;board.scm
-
+;; Tetris - objects/board.scm
+;;
+;; Written by Johan Eckerström and Viktor Deleskog
+;; For TDDC74 at LiU, 2008
 
 ;;BOARD CLASS
 
@@ -70,8 +71,8 @@
     ;; <- piece [piece%]
     ;; -> [bool]
     (define/public (add-piece-on-board-default piece)
-      (send piece move-to! (coords (/ (get-board-width) 2) (- (get-board-height) 1)))
-      ;(set! _pieces (append (list piece) _pieces))
+      (send piece move-to! (coords (/ (get-board-width) 2) 
+                                   (- (get-board-height) 1)))
       (set-active-piece! piece)
       (not (will-collide? (send this get-active-piece) (coords 0 0))))
 
@@ -102,7 +103,8 @@
     ;; <- piece [piece%]
     ;; <- direction [symb] (up, down, left, right)
     (define/public (move-piece piece direction)
-      (if (and (not (null? piece)) (move-possible? piece (direction->dxdy direction)))
+      (if (and (not (null? piece)) 
+               (move-possible? piece (direction->dxdy direction)))
           (send piece move! direction)
           #f))
 
@@ -147,12 +149,12 @@
          (send this get-pieces)))
 
     ;;VOID clean up filled rows
-    (define/public (clean-up-board)
+    (define/public (clean-up)
       (let ((filled-rows (get-filled-rows)))
         ;-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
         (if (send *supervisor* debug?)
             (begin
-              (display "BOARD -> CLEAN-UP-BOARD\n")
+              (display "BOARD -> CLEAN-UP\n")
               (display "filled-rows: ")
               (display filled-rows)
               (newline)(newline)))
@@ -225,8 +227,10 @@
                       (display (get-y new-coords))
                       (newline)(newline)))
                 ;-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
-                (if (and (>= (get-x new-coords) 0) (<= (get-x new-coords) (- (get-board-width) 1))
-                         (>= (get-y new-coords) 0) (<= (get-y new-coords) (- (get-board-height) 1))
+                (if (and (>= (get-x new-coords) 0) 
+                         (<= (get-x new-coords) (- (get-board-width) 1))
+                         (>= (get-y new-coords) 0) 
+                         (<= (get-y new-coords) (- (get-board-height) 1))
                          (not (will-collide? piece dxdy-coords)))
                     (worker (cdr blocks))
                     #f)))))
@@ -247,7 +251,8 @@
                 (for-each
                  (lambda (board-piece-block)
                    (if (not (eq? board-piece piece))
-                       (if (equal? new-coords (send board-piece-block get-abs-coords))
+                       (if (equal? new-coords 
+                                   (send board-piece-block get-abs-coords))
                            (set! collision #t))))
                  (send board-piece get-blocks)))
               (send this get-pieces))))
@@ -301,27 +306,3 @@
              (set! bottom #t)))
        (send piece get-blocks))
       bottom)))
-
-;; ### DEBUG CODE ###
-
-;(load "../utilities.scm")
-;(load "piece.scm")
-;(load "block.scm")
-;(load "../graphics.scm")
-;
-;(define test-board (make-object board% (size 10 20) 20))
-;(send test-board add-piece-on-board-custom (make-object piece% '((0 0) (1 0) (-1 0)) *red-brush*) (coords 2 3) #f)
-;
-;(define figur (car (send test-board get-pieces)))
-;
-;(define (print-coords piece)
-;  (for-each
-;   (lambda (block)
-;     (display (send block get-abs-coords))
-;     (newline))
-;   (send piece get-blocks)))
-
-
-;
-;(send test-board add-piece-on-board-custom (make-object piece% 'test '((0 0) (1 0) (2 0) (3 0) (4 0) (5 0) (6 0) (7 0) (8 0) (9 0)) *red-brush*) (cons 0 18) #f)
-;(send test-board add-piece-on-board-custom (make-object piece% 'test '((0 0) (1 0) (2 0) (3 0) (4 0) (5 0) (6 0) (7 0) (8 0) (9 0)) *red-brush*) (cons 0 15) #f)
