@@ -3,6 +3,24 @@
 ;; Written by Johan Eckerström and Viktor Deleskog
 ;; For TDDC74 at LiU, 2008
 
+;; -#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+;; DEBUG-MODE
+;; Type '(send *supervisor* enable(disable)-debug)' in the intepreter to
+;; enable/disable debug-mode. Debug mode can be changed during the game.
+;; The 'pixels-per-unit' variable should be set to >25 to see the block 
+;; coordinates on the board. Must be set before the game is started!
+;; debug: >25
+;; default: 20
+;; -#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+
+;; -#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
+;; FOR VISUALLY HANDICAPPED PERSONS & WIDESCREEN NERDS
+;; If you're visually handicapped or a 'must-have-a-widecreen-layout' person
+;; increase the board size and pixels-per-unit if you want a bigger pieces or
+;; bigger window layout. The variables to change are 'pixels-per-unit' and 
+;; 'board-size' (width height).
+;; Hope you enjoy this high-tech feature!
+;; -#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 
 ;; Load all files
 
@@ -18,18 +36,18 @@
 (define (initiate-graphics)
   (load "graphics_engine.scm"))
 
-(define board-size (coords 10 20))
-(define pixels-per-unit 20)
+(define board-size (coords 10 20)) ;; default 10 20
+(define pixels-per-unit 25) ;; set to >25 when debugging (default 20)
 (define *supervisor* (make-object supervisor% board-size pixels-per-unit))
 (define *board* (send *supervisor* get-board))
 
 ; VOID Update the game
-; This procedure is run every frame, first it checks if it's time to do 
+; This procedure runs in every frame, first it checks if it's time to do 
 ; anything, then checks if the active piece has hit the floor, it then 
 ; moves the active one step down.
 ;
 ; If the piece has hit the floor, or the move wasn't successful, the 
-; board will cleaned for filled rows, then if the next piece can't be
+; board will be cleaned of filled rows, then if the next piece can't be
 ; placed, it's game over.
 
 (define (update)

@@ -92,7 +92,7 @@
 ;### HELPER FUNCTIONS ###
 
 ;;FUNC convert direction to dxdy-coords
-;; <- direction [sybm] (up, down, left, right)
+;; <- direction [symb] (up, down, left, right)
 ;; -> [coords]
 (define (direction->dxdy direction)
   (cond
@@ -101,3 +101,9 @@
     ((eq? direction 'left) (coords -1 0))
     ((eq? direction 'right) (coords 1 0))
     (else (coords 0 0))))
+
+;;FUNC converts units -> pixels
+;; <- units [num]
+;; -> [num]
+(define (units->pixels units)
+  (* (send *board* get-pixels-per-unit) units))

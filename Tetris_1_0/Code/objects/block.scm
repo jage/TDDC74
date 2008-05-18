@@ -11,28 +11,29 @@
 
     ;;### FIELDS ###
 
-    (init rel-coords parent-piece)
+    (init struct-coords parent-piece)
 
-    (define _rel-coords (coords (get-x rel-coords) (get-y rel-coords)))
-    (define _abs-coords (coords (get-x rel-coords) (get-y rel-coords)))
+    (define _struct-coords (coords (get-x struct-coords) (get-y struct-coords)))
+    ;;comment: sets abs. coordninates to struct. coords when block is created
+    (define _abs-coords (coords (get-x struct-coords) (get-y struct-coords)))
     (define _parent-piece parent-piece)
 
     ;; ### FIELD ACCESSORS ###
 
-    ;;SET rel. coords
+    ;;SET structure coords
     ;; <- coords [coords]
-    (define/public (set-rel-coords! coords)
-      (set! _rel-coords coords))
+    (define/public (set-struct-coords! new-coords)
+      (set! _struct-coords (coords (get-x new-coords) (get-y new-coords))))
 
     ;;SET abs. coords
     ;; <- coords [coords]
-    (define/public (set-abs-coords! coords)
-      (set! _abs-coords coords))
+    (define/public (set-abs-coords! new-coords)
+      (set! _abs-coords (coords (get-x new-coords) (get-y new-coords))))
 
-    ;;GET rel. coords
+    ;;GET struct. coords
     ;; -> [coords]
-    (define/public (get-rel-coords)
-      (coords (get-x _rel-coords) (get-y _rel-coords)))
+    (define/public (get-struct-coords)
+      (coords (get-x _struct-coords) (get-y _struct-coords)))
 
     ;;GET abs. coords
     ;; -> [coords]

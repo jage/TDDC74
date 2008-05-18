@@ -72,10 +72,10 @@
     ;;### METHODS ###
 
     ;;VOID add block
-    ;; <- rel-coords [coords]
-    (define/public (add-block! rel-coords)
+    ;; <- struct-coords [coords]
+    (define/public (add-block! struct-coords)
       (set! _blocks 
-            (append _blocks (list (make-object block% rel-coords this)))))
+            (append _blocks (list (make-object block% struct-coords this)))))
 
     ;;VOID move piece to
     ;; <- board-coords [coords]
@@ -83,9 +83,9 @@
       (for-each
        (lambda (block)
          (send block move-to! 
-               (coords (+ (get-x (send block get-rel-coords)) 
+               (coords (+ (get-x (send block get-struct-coords)) 
                           (get-x board-coords))
-                       (+ (get-y (send block get-rel-coords)) 
+                       (+ (get-y (send block get-struct-coords)) 
                           (get-y board-coords)))))
        _blocks))
 
@@ -117,16 +117,16 @@
     (define/private (rotate-worker clockwise)
       (for-each
        (lambda (block)
-         (let ((new (rotate-block-coords block clockwise))
-               (old (send block get-rel-coords))
+         (let ((new (rotate-block-struct-coords block clockwise))
+               (old (send block get-struct-coords))
                (abs (send block get-abs-coords)))
-           (send block set-rel-coords! new)
+           (send block set-struct-coords! new)
            (send block set-abs-coords!
                  (coords (+ (get-x abs) (- (get-x new) (get-x old)))
                          (+ (get-y abs) (- (get-y new) (get-y old)))))))
        _blocks))
 
-    ;;VOID rotate block coords
+    ;;VOID rotate block structure coords
     ;; <- block [block%]
     ;; <- clockwise [bool]
 
@@ -137,31 +137,31 @@
     ;;  X O X X
     ;;  X X X
     ;;    X
-    (define/private (rotate-block-coords block clockwise)
-      (let ((rel-pos (send block get-rel-coords)))
+    (define/private (rotate-block-struct-coords block clockwise)
+      (let ((struct-pos (send block get-struct-coords)))
         (if clockwise
             (cond
-              ((equal? rel-pos (coords 0 1))   (coords -1 0))
-              ((equal? rel-pos (coords 0 -1))  (coords 1 0))
-              ((equal? rel-pos (coords 1 0 ))  (coords 0 1))
-              ((equal? rel-pos (coords 1 1))   (coords -1 1))
-              ((equal? rel-pos (coords 1 -1))  (coords 1 1))
-              ((equal? rel-pos (coords -1 0))  (coords 0 -1))
-              ((equal? rel-pos (coords -1 1))  (coords -1 -1))
-              ((equal? rel-pos (coords -1 -1)) (coords 1 -1))
-              ((equal? rel-pos (coords 2 0))   (coords 0 2))
-              (else rel-pos))
+              ((equal? struct-pos (coords 0 1))   (coords -1 0))
+              ((equal? struct-pos (coords 0 -1))  (coords 1 0))
+              ((equal? struct-pos (coords 1 0 ))  (coords 0 1))
+              ((equal? struct-pos (coords 1 1))   (coords -1 1))
+              ((equal? struct-pos (coords 1 -1))  (coords 1 1))
+              ((equal? struct-pos (coords -1 0))  (coords 0 -1))
+              ((equal? struct-pos (coords -1 1))  (coords -1 -1))
+              ((equal? struct-pos (coords -1 -1)) (coords 1 -1))
+              ((equal? struct-pos (coords 2 0))   (coords 0 2))
+              (else struct-pos))
             (cond
-              ((equal? rel-pos (coords 0 1))   (coords 1 0))
-              ((equal? rel-pos (coords 0 -1))  (coords -1 0))
-              ((equal? rel-pos (coords 1 0 ))  (coords 0 -1))
-              ((equal? rel-pos (coords 1 1))   (coords 1 -1))
-              ((equal? rel-pos (coords 1 -1))  (coords -1 -1))
-              ((equal? rel-pos (coords -1 0))  (coords 0 1))
-              ((equal? rel-pos (coords -1 1))  (coords 1 1))
-              ((equal? rel-pos (coords -1 -1)) (coords -1 1))
-              ((equal? rel-pos (coords 0 2))   (coords 2 0))
-              (else rel-pos)))))
+              ((equal? struct-pos (coords 0 1))   (coords 1 0))
+              ((equal? struct-pos (coords 0 -1))  (coords -1 0))
+              ((equal? struct-pos (coords 1 0 ))  (coords 0 -1))
+              ((equal? struct-pos (coords 1 1))   (coords 1 -1))
+              ((equal? struct-pos (coords 1 -1))  (coords -1 -1))
+              ((equal? struct-pos (coords -1 0))  (coords 0 1))
+              ((equal? struct-pos (coords -1 1))  (coords 1 1))
+              ((equal? struct-pos (coords -1 -1)) (coords -1 1))
+              ((equal? struct-pos (coords 0 2))   (coords 2 0))
+              (else struct-pos)))))
 
     ;;VOID delete block from piece
     ;; <- block [block%]

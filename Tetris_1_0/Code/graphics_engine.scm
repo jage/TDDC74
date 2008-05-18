@@ -9,10 +9,10 @@
 ; Space for the board and some information on the left
 ;  and a help feature at the bottom
 (define window-height
-  (+ 4 (send *board* units->pixels (send *board* get-board-height))))
+  (+ 4 (units->pixels (send *board* get-board-height))))
 (define window-width
-  (+ (send *board* units->pixels 7) 
-     (send *board* units->pixels (send *board* get-board-width))))
+  (+ (units->pixels 7) 
+     (units->pixels (send *board* get-board-width))))
 
 ; VOID Draw all the graphics, this procedure is called from the main loop
 (define (draw)
@@ -29,7 +29,7 @@
 (define (draw-status)
   (draw-text
    (send *supervisor* get-status)
-   (+ 10 (send *board* units->pixels (send *board* get-board-width)))
+   (+ 10 (units->pixels (send *board* get-board-width)))
    40
    *black-pen* *black-brush*))
 
@@ -38,7 +38,7 @@
   (draw-text
    (string-append "Interval: " 
                   (number->string (send *supervisor* get-interval-time)) " ms")
-   (+ 10 (send *board* units->pixels (send *board* get-board-width)))
+   (+ 10 (units->pixels (send *board* get-board-width)))
    25
    *black-pen* *black-brush*))
 
@@ -53,7 +53,7 @@
     (for-each
      (lambda (coord)
        (draw-line
-        (send *board* units->pixels coord)
+        (units->pixels coord)
         (- window-height 2)
         (send *board* get-pixels-per-unit)
         0
@@ -65,7 +65,7 @@
 ; on the right side of the line there's some game info
 (define (draw-design)
   (draw-line
-   (send *board* units->pixels (send *board* get-board-width))
+   (units->pixels (send *board* get-board-width))
    10
    0
    window-height
@@ -76,7 +76,7 @@
   (draw-text
    (string-append "Score: " 
                   (number->string (send (send *board* get-player) get-score)))
-   (+ 10 (send *board* units->pixels (send *board* get-board-width)))
+   (+ 10 (units->pixels (send *board* get-board-width)))
    10
    *black-pen* *black-brush*))
 

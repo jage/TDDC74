@@ -194,12 +194,6 @@
 
     ;;### FUNCTIONS
 
-    ;;FUNC converts units -> pixels
-    ;; <- units [num]
-    ;; -> [num]
-    (define/public (units->pixels units)
-      (* (get-pixels-per-unit) units))
-
     ;;FUNC move piece possible
     ;; <- piece [piece%]
     ;; <- delta-coord [coord]
