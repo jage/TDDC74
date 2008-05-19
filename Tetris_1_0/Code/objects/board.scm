@@ -121,14 +121,12 @@
       ;-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
       (for-each
        (lambda (piece)
-         ; Don't touch the active piece!
-         (if (not (eq? piece (send *board* get-active-piece)))
-             (for-each
-              (lambda (block)
-                (if (>= (get-y (send block get-abs-coords)) start-row)
-                    (send block move! 'down)))
-              (send piece get-blocks))))
-       (send this get-pieces)))
+         (for-each
+          (lambda (block)
+            (if (>= (get-y (send block get-abs-coords)) start-row)
+                (send block move! 'down)))
+          (send piece get-blocks)))
+      (send this get-pieces)))
 
     ;;VOID delete all blocks on row
     ;; <- row [num]
