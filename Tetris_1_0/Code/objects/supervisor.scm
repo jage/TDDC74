@@ -3,11 +3,6 @@
 ;; Written by Johan Eckerström and Viktor Deleskog
 ;; For TDDC74 at LiU, 2008
 
-;; ### CONSTANTS ###
-
-; Speed divisors
-(define speeds (vector 24 12 8 6 3 1))
-
 ;; SUPERVISOR CLASS
 
 (define supervisor%
@@ -149,3 +144,8 @@
     ;; -> [piece]
     (define/public (get-random-piece)
       (make-object (vector-ref *pieces* (random (vector-length *pieces*)))))))
+
+;; ### CONSTANTS ###
+
+; Speed divisors
+(define speeds (vector 24 12 8 6 3 1))

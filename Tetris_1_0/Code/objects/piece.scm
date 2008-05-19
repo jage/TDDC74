@@ -276,6 +276,8 @@
                (light-pen *light-magenta-pen*)
                (dark-pen *dark-magenta-pen*))))
 
+;; ### CONSTANTS ###
+
 ; Tetris pieces
 (define *pieces* 
   (vector I-piece% J-piece% L-piece% O-piece% S-piece% Z-piece% T-piece%))
